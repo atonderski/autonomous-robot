@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-project(helloworld)
+project(autonomous-robot)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -35,6 +35,9 @@ set(LIBRARIES Threads::Threads)
 # Create executable.
 add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/src/${PROJECT_NAME}.cpp $<TARGET_OBJECTS:${PROJECT_NAME}-core>)
 target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
+
+add_executable(helloworld ${CMAKE_CURRENT_SOURCE_DIR}/src/helloworld.cpp $<TARGET_OBJECTS:${PROJECT_NAME}-core>)
+target_link_libraries(helloworld ${LIBRARIES})
 
 ################################################################################
 # Enable unit testing.

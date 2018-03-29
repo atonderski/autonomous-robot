@@ -10,5 +10,9 @@ To building for arm instead, just replace Dockerfile.amd64 with Dockerfile.armhf
 
 How to run:
 
-    docker run -it --net=host myname
+    docker run -it --net=host myname ./helloworld
+
+or:
+
+    docker run -it --net=host myname ./autonomous-robot
 

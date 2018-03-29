@@ -15,12 +15,12 @@ WORKDIR /opt/sources
 RUN mkdir /tmp/build && \
     cd /tmp/build && \
     cmake -D CMAKE_BUILD_TYPE=Release /opt/sources && \
-    make && make test && cp helloworld /tmp
-RUN [ "cross -build -end" ]
+    make && make test && cp helloworld autonomous-robot /tmp
+RUN [ "cross-build-end" ]
 
 # Deploy.
 FROM pipill/armhf-alpine:edge
 RUN mkdir /opt
 WORKDIR /opt
-COPY --from=builder /tmp/helloworld .
-CMD ["/opt/helloworld"]
+COPY --from=builder /tmp/helloworld /tmp/autonomous-robot ./
+# CMD ["/opt/helloworld"]
