@@ -9,9 +9,15 @@ int32_t main(int32_t , char **) {
 
     cluon::OD4Session od4{111,
         [](cluon::data::Envelope &&envelope) {
-            if (envelope.dataType() == 2001) {
-                std::cout << "Hello! Got some data!" << std::endl;
-                // Here we should handle input data
+            std::cout << "Hello! Got some data!" << std::endl;
+            // Here we should handle input data
+            if (envelope.dataType() == 1039) {
+                opendlv::proxy::DistanceReading distanceMsg = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
+                distanceMsg.distance();
+            }
+            if (envelope.dataType() == 1037) {
+                opendlv::proxy::VoltageReading voltageMsg = cluon::extractMessage<opendlv::proxy::VoltageReading>(std::move(envelope));
+                voltageMsg.voltage();
             }
         }};
     
@@ -19,6 +25,13 @@ int32_t main(int32_t , char **) {
         std::this_thread::sleep_for(std::chrono::duration <double >(1.0));
         // Here we should make decisions and send instructions
         // od4.send(msg);
+        opendlv::proxy::GroundSteeringRequest steeringMsg;
+        steeringMsg.groundSteering(1);
+        od4.send(steeringMsg);
+
+        opendlv::proxy::PedalPositionRequest pedalPositionMsg;
+        pedalPositionMsg.position(0);
+        od4.send(pedalPositionMsg);
     }
     
     return 0;
