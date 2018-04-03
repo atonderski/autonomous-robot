@@ -16,16 +16,16 @@ int32_t main(int32_t , char **) {
                 opendlv::proxy::GroundSteeringRequest steeringMsg = cluon::extractMessage<opendlv::proxy::GroundSteeringRequest>(std::move(envelope));
                 std::cout << "Got ground steering request (probably from me): " << steeringMsg.groundSteering() << std::endl;
             }
-            if (envelope.dataType() == 1086) {
+            else if (envelope.dataType() == 1086) {
                 opendlv::proxy::PedalPositionRequest pedalPositonMsg = cluon::extractMessage<opendlv::proxy::PedalPositionRequest>(std::move(envelope));
                 std::cout << "Got pedal position request (probably from me): " << pedalPositonMsg.position() << std::endl;
             }
-            if (envelope.dataType() == 1039) {
+            else if (envelope.dataType() == 1039) {
                 opendlv::proxy::DistanceReading distanceMsg = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
                 latestDistance = distanceMsg.distance();
                 std::cout << "Got distance message (from ultrasonic): " << distanceMsg.distance() << std::endl;
             }
-            if (envelope.dataType() == 1037) {
+            else if (envelope.dataType() == 1037) {
                 opendlv::proxy::VoltageReading voltageMsg = cluon::extractMessage<opendlv::proxy::VoltageReading>(std::move(envelope));
                 latestVoltage = voltageMsg.voltage();
                 std::cout << "Got voltage message (from IR): " << voltageMsg.voltage() << std::endl;
