@@ -10,12 +10,12 @@ WORKDIR /opt/sources
 RUN mkdir /tmp/build && \
     cd /tmp/build && \
     cmake -D CMAKE_BUILD_TYPE=Release /opt/sources && \
-    make && make test && cp helloworld autonomous-robot /tmp
+    make && cp autonomous-robot /tmp
 
 # Deploy.
 FROM alpine:3.7
 RUN apk update && apk --no-cache add libstdc++
 RUN mkdir /opt
 WORKDIR /opt
-COPY --from=builder /tmp/helloworld /tmp/autonomous-robot ./ 
-# CMD ["/opt/helloworld"]
+COPY --from=builder /tmp/autonomous-robot ./ 
+ENTRYPOINT ["/opt/autonomous-robot"]

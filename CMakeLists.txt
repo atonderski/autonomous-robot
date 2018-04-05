@@ -24,20 +24,13 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/opendlv.odvd ${CMAKE_BINARY_DIR}/cluon-msc)
 
 ################################################################################
-# Generate messages.{hpp,cpp} from messages file.
-add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/messages.cpp
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_BINARY_DIR}/cluon-msc --cpp-sources --cpp-add-include-file=messages.hpp --out=${CMAKE_BINARY_DIR}/messages.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/messages.odvd
-    COMMAND ${CMAKE_BINARY_DIR}/cluon-msc --cpp-headers --out=${CMAKE_BINARY_DIR}/messages.hpp ${CMAKE_CURRENT_SOURCE_DIR}/src/messages.odvd
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/messages.odvd ${CMAKE_BINARY_DIR}/cluon-msc)
-
 # Add current build directory as include directory as it contains generated files.
 include_directories(SYSTEM ${CMAKE_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 ################################################################################
 # Gather all object code first to avoid double compilation.
-add_library(${PROJECT_NAME}-core OBJECT  ${CMAKE_BINARY_DIR}/messages.cpp ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/prime-checker.cpp)
+add_library(${PROJECT_NAME}-core OBJECT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp)
 set(LIBRARIES Threads::Threads)
 
 ################################################################################
@@ -45,11 +38,8 @@ set(LIBRARIES Threads::Threads)
 add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/src/${PROJECT_NAME}.cpp $<TARGET_OBJECTS:${PROJECT_NAME}-core>)
 target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
 
-add_executable(helloworld ${CMAKE_CURRENT_SOURCE_DIR}/src/helloworld.cpp $<TARGET_OBJECTS:${PROJECT_NAME}-core>)
-target_link_libraries(helloworld ${LIBRARIES})
-
 ################################################################################
 # Enable unit testing.
-enable_testing()
-add_executable(${PROJECT_NAME}-runner ${CMAKE_CURRENT_SOURCE_DIR}/test/test-prime-checker.cpp $<TARGET_OBJECTS:${PROJECT_NAME}-core>)
-add_test(NAME ${PROJECT_NAME}-runner COMMAND ${PROJECT_NAME}-runner)
+#enable_testing()
+#add_executable(${PROJECT_NAME}-runner ${CMAKE_CURRENT_SOURCE_DIR}/test/test-prime-checker.cpp $<TARGET_OBJECTS:${PROJECT_NAME}-core>)
+#add_test(NAME ${PROJECT_NAME}-runner COMMAND ${PROJECT_NAME}-runner)
