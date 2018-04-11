@@ -3,8 +3,8 @@ RUN [ "cross-build-start" ]
 RUN cat /etc/apk/repositories && \
     echo http://dl-4.alpinelinux.org/alpine/v3.7/main > /etc/apk/repositories && \
     echo http://dl-4.alpinelinux.org/alpine/v3.7/community >> /etc/apk/repositories RUN apk update && \
-    apk --no-cache add \ 
-        ca-certificates \ 
+    apk --no-cache add \
+        ca-certificates \
         cmake \
         g++ \
         make
@@ -18,7 +18,9 @@ RUN [ "cross-build-end" ]
 
 # Deploy.
 FROM pipill/armhf-alpine:edge
-RUN apk update && apk add --no-cache libstdc++ 
+# RUN apk update && apk add --no-cache libstdc++
+COPY --from=builder /usr/lib/libstdc++.so.6 /usr/lib/
+COPY --from=builder /usr/lib/libgcc_s.so.1 /usr/lib/
 RUN mkdir /opt
 WORKDIR /opt
 COPY --from=builder /tmp/autonomous-robot ./
