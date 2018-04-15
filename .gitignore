@@ -1,5 +1,9 @@
+# IDE
+.idea/
+
 # directories
 build/
+cmake-build-*/
 
 # vim autocomplete
 compile_commands.json
