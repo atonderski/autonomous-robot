@@ -482,10 +482,10 @@ struct AutoReg : NonCopyable {
     #define INTERNAL_CATCH_TESTCASE_METHOD_NO_REGISTRATION( TestName, ClassName, ... ) \
         namespace{                        \
             struct TestName : ClassName { \
-                void test();              \
+                void tests();              \
             };                            \
         }                                 \
-        void TestName::test()
+        void TestName::tests()
 
 #endif
 
@@ -564,9 +564,9 @@ namespace Catch {
     struct ResultDisposition { enum Flags {
         Normal = 0x01,
 
-        ContinueOnFailure = 0x02,   // Failures fail test, but execution continues
+        ContinueOnFailure = 0x02,   // Failures fail tests, but execution continues
         FalseTest = 0x04,           // Prefix expression with !
-        SuppressFail = 0x08         // Failures are reported but do not fail the test
+        SuppressFail = 0x08         // Failures are reported but do not fail the tests
     }; };
 
     ResultDisposition::Flags operator | ( ResultDisposition::Flags lhs, ResultDisposition::Flags rhs );
@@ -4896,7 +4896,7 @@ namespace Catch {
             // If you find your debugger stopping you here then go one level up on the
             // call-stack for the code that caused it (typically a failed assertion)
 
-            // (To go back to the test and change execution, jump over the throw, next)
+            // (To go back to the tests and change execution, jump over the throw, next)
             CATCH_BREAK_INTO_DEBUGGER();
         }
         if( m_reaction.shouldThrow )
@@ -6421,7 +6421,7 @@ namespace Catch {
             | Help( config.showHelp )
             | Opt( config.listTests )
                 ["-l"]["--list-tests"]
-                ( "list all/matching test cases" )
+                ( "list all/matching tests cases" )
             | Opt( config.listTags )
                 ["-t"]["--list-tags"]
                 ( "list all/matching tags" )
@@ -6457,10 +6457,10 @@ namespace Catch {
                 ( "enable warnings" )
             | Opt( [&]( bool flag ) { config.showDurations = flag ? ShowDurations::Always : ShowDurations::Never; }, "yes|no" )
                 ["-d"]["--durations"]
-                ( "show test durations" )
+                ( "show tests durations" )
             | Opt( loadTestNamesFromFile, "filename" )
                 ["-f"]["--input-file"]
-                ( "load test names to run from a file" )
+                ( "load tests names to run from a file" )
             | Opt( config.filenamesAsTags )
                 ["-#"]["--filenames-as-tags"]
                 ( "adds a tag for the filename" )
@@ -6471,14 +6471,14 @@ namespace Catch {
                 ["-v"]["--verbosity"]
                 ( "set output verbosity" )
             | Opt( config.listTestNamesOnly )
-                ["--list-test-names-only"]
-                ( "list all/matching test cases names only" )
+                ["--list-tests-names-only"]
+                ( "list all/matching tests cases names only" )
             | Opt( config.listReporters )
                 ["--list-reporters"]
                 ( "list all reporters" )
             | Opt( setTestOrder, "decl|lex|rand" )
                 ["--order"]
-                ( "test case order (defaults to decl)" )
+                ( "tests case order (defaults to decl)" )
             | Opt( setRngSeed, "'time'|number" )
                 ["--rng-seed"]
                 ( "set a specific seed for random numbers" )
@@ -6495,8 +6495,8 @@ namespace Catch {
                 ["--benchmark-resolution-multiple"]
                 ( "multiple of clock resolution to run benchmarks" )
 
-            | Arg( config.testsOrTags, "test name|pattern|tags" )
-                ( "which test or tests to use" );
+            | Arg( config.testsOrTags, "tests name|pattern|tags" )
+                ( "which tests or tests to use" );
 
         return cli;
     }
@@ -7572,9 +7572,9 @@ namespace Catch {
     std::size_t listTests( Config const& config ) {
         TestSpec testSpec = config.testSpec();
         if( config.testSpec().hasFilters() )
-            Catch::cout() << "Matching test cases:\n";
+            Catch::cout() << "Matching tests cases:\n";
         else {
-            Catch::cout() << "All available test cases:\n";
+            Catch::cout() << "All available tests cases:\n";
             testSpec = TestSpecParser( ITagAliasRegistry::get() ).parse( "*" ).testSpec();
         }
 
@@ -7598,9 +7598,9 @@ namespace Catch {
         }
 
         if( !config.testSpec().hasFilters() )
-            Catch::cout() << pluralise( matchedTestCases.size(), "test case" ) << '\n' << std::endl;
+            Catch::cout() << pluralise( matchedTestCases.size(), "tests case" ) << '\n' << std::endl;
         else
-            Catch::cout() << pluralise( matchedTestCases.size(), "matching test case" ) << '\n' << std::endl;
+            Catch::cout() << pluralise( matchedTestCases.size(), "matching tests case" ) << '\n' << std::endl;
         return matchedTestCases.size();
     }
 
@@ -7638,7 +7638,7 @@ namespace Catch {
     std::size_t listTags( Config const& config ) {
         TestSpec testSpec = config.testSpec();
         if( config.testSpec().hasFilters() )
-            Catch::cout() << "Tags for matching test cases:\n";
+            Catch::cout() << "Tags for matching tests cases:\n";
         else {
             Catch::cout() << "All available tags:\n";
             testSpec = TestSpecParser( ITagAliasRegistry::get() ).parse( "*" ).testSpec();
@@ -8578,7 +8578,7 @@ namespace Catch {
 
         handleUnfinishedSections();
 
-        // Recreate section for test case (as we will lose the one that was in scope)
+        // Recreate section for tests case (as we will lose the one that was in scope)
         auto const& testCaseInfo = m_activeTestCase->getTestCaseInfo();
         SectionInfo testCaseSection(testCaseInfo.lineInfo, testCaseInfo.name, testCaseInfo.description);
 
@@ -8643,7 +8643,7 @@ namespace Catch {
             }
             duration = timer.getElapsedSeconds();
         } catch (TestFailureException&) {
-            // This just means the test was aborted due to failure
+            // This just means the tests was aborted due to failure
         } catch (...) {
             // Under CATCH_CONFIG_FAST_COMPILE, unexpected exceptions under REQUIRE assertions
             // are reported without translation at the point of origin.
@@ -9046,7 +9046,7 @@ namespace Catch {
     }
     void Session::libIdentify() {
         Catch::cout()
-                << std::left << std::setw(16) << "description: " << "A Catch test executable\n"
+                << std::left << std::setw(16) << "description: " << "A Catch tests executable\n"
                 << std::left << std::setw(16) << "category: " << "testframework\n"
                 << std::left << std::setw(16) << "framework: " << "Catch Test\n"
                 << std::left << std::setw(16) << "version: " << libraryVersion() << std::endl;
@@ -9774,7 +9774,7 @@ namespace Catch {
         return ret;
     }
 
-    TestCase::TestCase( ITestInvoker* testCase, TestCaseInfo const& info ) : TestCaseInfo( info ), test( testCase ) {}
+    TestCase::TestCase( ITestInvoker* testCase, TestCaseInfo const& info ) : TestCaseInfo( info ), tests( testCase ) {}
 
     TestCase TestCase::withName( std::string const& _newName ) const {
         TestCase other( *this );
@@ -9783,11 +9783,11 @@ namespace Catch {
     }
 
     void TestCase::invoke() const {
-        test->invoke();
+        tests->invoke();
     }
 
     bool TestCase::operator == ( TestCase const& other ) const {
-        return  test.get() == other.test.get() &&
+        return  tests.get() == other.tests.get() &&
                 name == other.name &&
                 className == other.className;
     }
@@ -9858,7 +9858,7 @@ namespace Catch {
         std::string name = testCase.getTestCaseInfo().name;
         if( name.empty() ) {
             ReusableStringStream rss;
-            rss << "Anonymous test case " << ++m_unnamedCount;
+            rss << "Anonymous tests case " << ++m_unnamedCount;
             return registerTest( testCase.withName( rss.str() ) );
         }
         m_functions.push_back( testCase );
@@ -11004,8 +11004,8 @@ namespace Catch {
 namespace {
 // Colour, message variants:
 // - white: No tests ran.
-// -   red: Failed [both/all] N test cases, failed [both/all] M assertions.
-// - white: Passed [both/all] N test cases (no assertions).
+// -   red: Failed [both/all] N tests cases, failed [both/all] M assertions.
+// - white: Passed [both/all] N tests cases (no assertions).
 // -   red: Failed N tests cases, failed M assertions.
 // - green: Passed [both/all] N tests cases with M assertions.
 void printTotals(std::ostream& out, const Totals& totals) {
@@ -11018,24 +11018,24 @@ void printTotals(std::ostream& out, const Totals& totals) {
             bothOrAll(totals.assertions.failed) : std::string();
         out <<
             "Failed " << bothOrAll(totals.testCases.failed)
-            << pluralise(totals.testCases.failed, "test case") << ", "
+            << pluralise(totals.testCases.failed, "tests case") << ", "
             "failed " << qualify_assertions_failed <<
             pluralise(totals.assertions.failed, "assertion") << '.';
     } else if (totals.assertions.total() == 0) {
         out <<
             "Passed " << bothOrAll(totals.testCases.total())
-            << pluralise(totals.testCases.total(), "test case")
+            << pluralise(totals.testCases.total(), "tests case")
             << " (no assertions).";
     } else if (totals.assertions.failed) {
         Colour colour(Colour::ResultError);
         out <<
-            "Failed " << pluralise(totals.testCases.failed, "test case") << ", "
+            "Failed " << pluralise(totals.testCases.failed, "tests case") << ", "
             "failed " << pluralise(totals.assertions.failed, "assertion") << '.';
     } else {
         Colour colour(Colour::ResultSuccess);
         out <<
             "Passed " << bothOrAll(totals.testCases.passed)
-            << pluralise(totals.testCases.passed, "test case") <<
+            << pluralise(totals.testCases.passed, "tests case") <<
             " with " << pluralise(totals.assertions.passed, "assertion") << '.';
     }
 }
@@ -11210,7 +11210,7 @@ private:
 } // anon namespace
 
         std::string CompactReporter::getDescription() {
-            return "Reports test results on a single line, suitable for IDEs";
+            return "Reports tests results on a single line, suitable for IDEs";
         }
 
         ReporterPreferences CompactReporter::getPreferences() const {
@@ -11220,7 +11220,7 @@ private:
         }
 
         void CompactReporter::noMatchingTestCases( std::string const& spec ) {
-            stream << "No test cases matched '" << spec << '\'' << std::endl;
+            stream << "No tests cases matched '" << spec << '\'' << std::endl;
         }
 
         void CompactReporter::assertionStarting( AssertionInfo const& ) {}
@@ -11598,11 +11598,11 @@ ConsoleReporter::ConsoleReporter(ReporterConfig const& config)
 ConsoleReporter::~ConsoleReporter() = default;
 
 std::string ConsoleReporter::getDescription() {
-    return "Reports test results as plain lines of text";
+    return "Reports tests results as plain lines of text";
 }
 
 void ConsoleReporter::noMatchingTestCases(std::string const& spec) {
-    stream << "No test cases matched '" << spec << '\'' << std::endl;
+    stream << "No tests cases matched '" << spec << '\'' << std::endl;
 }
 
 void ConsoleReporter::assertionStarting(AssertionInfo const&) {}
@@ -11636,7 +11636,7 @@ void ConsoleReporter::sectionEnded(SectionStats const& _sectionStats) {
         if (m_sectionStack.size() > 1)
             stream << "\nNo assertions in section";
         else
-            stream << "\nNo assertions in test case";
+            stream << "\nNo assertions in tests case";
         stream << " '" << _sectionStats.sectionInfo.name << "'\n" << std::endl;
     }
     if (m_config->showDurations() == ShowDurations::Always) {
@@ -11736,7 +11736,7 @@ void ConsoleReporter::printTestCaseAndSectionHeader() {
         Colour colourGuard(Colour::Headers);
 
         auto
-            it = m_sectionStack.begin() + 1, // Skip first section (test case)
+            it = m_sectionStack.begin() + 1, // Skip first section (tests case)
             itEnd = m_sectionStack.end();
         for (; it != itEnd; ++it)
             printHeaderString(it->name, 2);
@@ -11807,7 +11807,7 @@ void ConsoleReporter::printTotals( Totals const& totals ) {
         stream << Colour(Colour::ResultSuccess) << "All tests passed";
         stream << " ("
             << pluralise(totals.assertions.passed, "assertion") << " in "
-            << pluralise(totals.testCases.passed, "test case") << ')'
+            << pluralise(totals.testCases.passed, "tests case") << ')'
             << '\n';
     } else {
 
@@ -11825,7 +11825,7 @@ void ConsoleReporter::printTotals( Totals const& totals ) {
                           .addRow(totals.testCases.failedButOk)
                           .addRow(totals.assertions.failedButOk));
 
-        printSummaryRow("test cases", columns, 0);
+        printSummaryRow("tests cases", columns, 0);
         printSummaryRow("assertions", columns, 1);
     }
 }
@@ -11936,7 +11936,7 @@ namespace Catch {
     JunitReporter::~JunitReporter() {};
 
     std::string JunitReporter::getDescription() {
-        return "Reports test results in an XML format that looks like Ant's junitreport target";
+        return "Reports tests results in an XML format that looks like Ant's junitreport target";
     }
 
     void JunitReporter::noMatchingTestCases( std::string const& /*spec*/ ) {}
@@ -11994,7 +11994,7 @@ namespace Catch {
             xml.writeAttribute( "time", suiteTime );
         xml.writeAttribute( "timestamp", getCurrentTimestamp() );
 
-        // Write test cases
+        // Write tests cases
         for( auto const& child : groupNode.children )
             writeTestCase( *child );
 
@@ -12005,8 +12005,8 @@ namespace Catch {
     void JunitReporter::writeTestCase( TestCaseNode const& testCaseNode ) {
         TestCaseStats const& stats = testCaseNode.value;
 
-        // All test cases have exactly one section - which represents the
-        // test case itself. That section may have 0-n nested sections
+        // All tests cases have exactly one section - which represents the
+        // tests case itself. That section may have 0-n nested sections
         assert( testCaseNode.children.size() == 1 );
         SectionNode const& rootSection = *testCaseNode.children.front();
 
@@ -12229,7 +12229,7 @@ namespace Catch {
     XmlReporter::~XmlReporter() = default;
 
     std::string XmlReporter::getDescription() {
-        return "Reports test results as an XML document";
+        return "Reports tests results as an XML document";
     }
 
     std::string XmlReporter::getStylesheetRef() const {

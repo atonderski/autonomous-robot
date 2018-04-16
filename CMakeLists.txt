@@ -55,5 +55,5 @@ target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
 ################################################################################
 # Enable unit testing.
 #enable_testing()
-#add_executable(${PROJECT_NAME}-runner ${CMAKE_CURRENT_SOURCE_DIR}/test/test-prime-checker.cpp $<TARGET_OBJECTS:${PROJECT_NAME}-core>)
+#add_executable(${PROJECT_NAME}-runner ${CMAKE_CURRENT_SOURCE_DIR}/tests/test-prime-checker.cpp $<TARGET_OBJECTS:${PROJECT_NAME}-core>)
 #add_test(NAME ${PROJECT_NAME}-runner COMMAND ${PROJECT_NAME}-runner)
