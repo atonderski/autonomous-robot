@@ -1,5 +1,5 @@
 autonomous-robot:
-    image: atonderski/autonomous-robot
+    image: autonomous-robot
     command: "--cid=111 --freq=10"
 
 sim-global:
