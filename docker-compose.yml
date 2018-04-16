@@ -1,17 +1,18 @@
+autonomous-robot:
+    image: atonderski/autonomous-robot
+    command: "--cid=111 --freq=10"
+
 sim-global:
     image: chalmersrevere/opendlv-sim-global-amd64:v0.0.5
-    network_mode: "host"
     command: "/usr/bin/opendlv-sim-global --cid=111 --freq=10 --frame-id=0 \
         --x=0.0 --yaw=0.2"
 
 sim-motor-kiwi:
     image: chalmersrevere/opendlv-sim-motor-kiwi-amd64:v0.0.4
-    network_mode: "host"
     command: "/usr/bin/opendlv-sim-motor-kiwi --cid=111 --freq=10 --frame-id=0"
 
 sim-ultrasonic-srf08-front:
     image: chalmersrevere/opendlv-sim-ultrasonic-srf08-amd64:v0.0.4
-    network_mode: "host"
     volumes:
       - ./simulation-map.txt:/opt/simulation-map.txt
     command: "/usr/bin/opendlv-sim-ultrasonic-srf08 \
@@ -20,7 +21,6 @@ sim-ultrasonic-srf08-front:
 
 sim-ultrasonic-srf08-rear:
     image: chalmersrevere/opendlv-sim-ultrasonic-srf08-amd64:v0.0.4
-    network_mode: "host"
     volumes:
       - ./simulation-map.txt:/opt/simulation-map.txt
     command: "/usr/bin/opendlv-sim-ultrasonic-srf08 \
@@ -29,7 +29,6 @@ sim-ultrasonic-srf08-rear:
 
 sim-adc-bbblue-left:
     image: chalmersrevere/opendlv-sim-adc-bbblue-amd64:v0.0.4
-    network_mode: "host"
     volumes:
       - ./simulation-map.txt:/opt/simulation-map.txt
     command: "/usr/bin/opendlv-sim-adc-bbblue --map-file=/opt/simulation-map.txt \
@@ -37,7 +36,6 @@ sim-adc-bbblue-left:
 
 sim-adc-bbblue-right:
     image: chalmersrevere/opendlv-sim-adc-bbblue-amd64:v0.0.4
-    network_mode: "host"
     volumes:
       - ./simulation-map.txt:/opt/simulation-map.txt
     command: "/usr/bin/opendlv-sim-adc-bbblue --map-file=/opt/simulation-map.txt \
@@ -45,12 +43,14 @@ sim-adc-bbblue-right:
 
 logic-test-kiwi:
     image: chalmersrevere/opendlv-logic-test-kiwi-amd64:v0.0.5
-    network_mode: "host"
     command: "/usr/bin/opendlv-logic-test-kiwi --cid=111 --freq=10 --frame-id=0"
 
 ui-default:
     image: chalmersrevere/opendlv-ui-default-amd64:v0.0.2
-    network_mode: "host"
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
     volumes:
       - ./simulation-map.txt:/srv/http/simulation-map.txt
     command: "--cid=111"
