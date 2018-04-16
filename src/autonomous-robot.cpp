@@ -3,76 +3,107 @@
 
 #include "cluon-complete.hpp"
 #include "opendlv-standard-message-set.hpp"
+#include "controller.h"
+#include "manualcontroller.h"
+#include "simplecontroller.h"
+
+
+Controller& initializeController(std::map<std::string, std::string> commandlineArguments) {
+    if (commandlineArguments.count("manual") != 0) {
+        double pedalMagnitude = std::stod(commandlineArguments["pedal"]);
+        double steeringMagnitude = std::stod(commandlineArguments["steering"]);
+        double runTime = std::stod(commandlineArguments["time"]);
+        return *(new ManualController(pedalMagnitude, steeringMagnitude, runTime));
+    } else {
+        return *(new SimpleController());
+    }
+}
 
 int32_t main(int32_t argc, char **argv) {
     std::cout << "Hello! Activating super pro vehicle control " << std::endl;
+
     auto commandlineArguments = cluon::getCommandlineArguments(argc, argv);
-    float latestDistance;
-    float latestVoltage;
-    cluon::OD4Session od4{static_cast<uint16_t>(std::stoi(commandlineArguments["cid"])),
-        [&latestDistance, &latestVoltage](cluon::data::Envelope &&envelope) {
-            // Here we should handle input data
-            uint32_t id = envelope.senderStamp();
-            if (envelope.dataType() == 1090) {
-                opendlv::proxy::GroundSteeringRequest steeringMsg = cluon::extractMessage<opendlv::proxy::GroundSteeringRequest>(std::move(envelope));
-                std::cout << "Got ground steering request (probably from me): " << steeringMsg.groundSteering() << std::endl;
-            }
-            else if (envelope.dataType() == 1086) {
-                opendlv::proxy::PedalPositionRequest pedalPositonMsg = cluon::extractMessage<opendlv::proxy::PedalPositionRequest>(std::move(envelope));
-                std::cout << "Got pedal position request (probably from me): " << pedalPositonMsg.position() << std::endl;
-            }
-            else if (envelope.dataType() == 1039) {
-                opendlv::proxy::DistanceReading distanceMsg = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
-                if (id == 1) {
-                    std::cout << "Got front distance message (from ultrasonic): " << distanceMsg.distance() << std::endl;
-                    latestDistance = distanceMsg.distance();
-                } else if (id == 2) {
-                    std::cout << "Got back distance message (from ultrasonic): " << distanceMsg.distance() << std::endl;
-                } else{
-                    std::cout << "Got unknown distance message (from ultrasonic): " << distanceMsg.distance() << std::endl;
-                }
-            }
-            else if (envelope.dataType() == 1037) {
-                opendlv::proxy::VoltageReading voltageMsg = cluon::extractMessage<opendlv::proxy::VoltageReading>(std::move(envelope));
-                if (id==1){
-                    std::cout << "Got left voltage message (from IR): " << voltageMsg.voltage() << std::endl;
-                    latestVoltage = voltageMsg.voltage();
-                } else if (id==2){
-                    std::cout << "Got right voltage message (from IR): " << voltageMsg.voltage() << std::endl;
-                } else{
-                    std::cout << "Got unknown voltage message (from IR): " << voltageMsg.voltage() << std::endl;
-                }
-            }
-            else {
-                std::cout << "Got some unknown data!" << std::endl;
-            }
-        }};
+    if (0 == commandlineArguments.count("cid") || 0 == commandlineArguments.count("freq")) {
+        std::cerr << argv[0] << " runs the super pro vehicle control by sending actuation commands and reacting to sensor input."
+                  << std::endl;
+        std::cerr << "Usage:   " << argv[0]
+                  << " --freq=<frequency> --cid=<OpenDaVINCI session> [--verbose] " << std::endl;
+        std::cerr << "Example: " << argv[0] << " --freq=10 --cid=111" << std::endl;
+        return 1;
+    }
+    bool const VERBOSE{commandlineArguments.count("verbose") != 0};
+    uint16_t const CID = static_cast<const uint16_t>(std::stoi(commandlineArguments["cid"]));
+    float const FREQ = std::stof(commandlineArguments["freq"]);
 
-    float pedalMagnitude = std::stof(commandlineArguments["pedal"]); 
-    float steeringMagnitude = std::stof(commandlineArguments["steering"]); 
-    float runTime = std::stof(commandlineArguments["time"]); 
 
-    float currentTime = 0;
-    while (od4.isRunning()) {
-        std::this_thread::sleep_for(std::chrono::duration<double>(0.1));
-        currentTime += 0.1;
-        // Here we should make decisions and send instructions
+    Controller& controller = initializeController(commandlineArguments);
+
+    auto onDistanceReading{[&controller, &VERBOSE](cluon::data::Envelope &&envelope) {
+        uint32_t const senderStamp = envelope.senderStamp();
+        auto distanceReading = cluon::extractMessage<opendlv::proxy::DistanceReading>(std::move(envelope));
+        if (senderStamp == 0) {
+            if (VERBOSE) {
+                std::cout << "Got front distance message (from ultrasonic): " << distanceReading.distance() << std::endl;
+            }
+            controller.setFrontUltrasonic(distanceReading.distance());
+        } else if (senderStamp == 1) {
+            if (VERBOSE) {
+                std::cout << "Got back distan§ce message (from ultrasonic): " << distanceReading.distance() << std::endl;
+            }
+            controller.setRearUltrasonic(distanceReading.distance());
+        } else {
+            if (VERBOSE) {
+                std::cout << "Got unknown distance message (from ultrasonic): " << distanceReading.distance() << std::endl;
+            }
+        }
+    }};
+    auto onVoltageReading{[&controller, &VERBOSE](cluon::data::Envelope &&envelope) {
+        uint32_t const senderStamp = envelope.senderStamp();
+        auto voltageReading = cluon::extractMessage<opendlv::proxy::VoltageReading>(std::move(envelope));
+        if (senderStamp == 0) {
+            if (VERBOSE) {
+                std::cout << "Got left voltage message (from IR): " << voltageReading.voltage() << std::endl;
+            }
+            controller.setLeftIr(voltageReading.voltage());
+        } else if (senderStamp == 1) {
+            if (VERBOSE) {
+                std::cout << "Got right voltage message (from IR): " << voltageReading.voltage() << std::endl;
+            }
+            controller.setRightIr(voltageReading.voltage());
+        } else {
+            if (VERBOSE) {
+                std::cout << "Got unknown voltage message (from IR): " << voltageReading.voltage() << std::endl;
+            }
+
+        }
+    }};
+
+
+    cluon::OD4Session od4{CID};
+    od4.dataTrigger(opendlv::proxy::DistanceReading::ID(), onDistanceReading);
+    od4.dataTrigger(opendlv::proxy::VoltageReading::ID(), onVoltageReading);
+
+    double const DT = 1.0 / FREQ;
+    auto atFrequency{[&VERBOSE, &controller, &od4, &DT]() -> bool {
+        controller.step(DT);
 
         opendlv::proxy::GroundSteeringRequest steeringMsg;
-        steeringMsg.groundSteering(steeringMagnitude);
-        od4.send(steeringMsg);
-
+        steeringMsg.groundSteering(controller.getGroundSteeringAngle());
         opendlv::proxy::PedalPositionRequest pedalPositionMsg;
-        pedalPositionMsg.position(pedalMagnitude);
-        od4.send(pedalPositionMsg);
-        if (currentTime > runTime){
-            pedalPositionMsg.position(0.0);
-            od4.send(pedalPositionMsg);
-            steeringMsg.groundSteering(0.0);
-            od4.send(steeringMsg);
-            break;
+        pedalPositionMsg.position(controller.getPedalPosition());
+
+        cluon::data::TimeStamp sampleTime;
+        od4.send(steeringMsg, sampleTime, 0);
+        od4.send(pedalPositionMsg, sampleTime, 0);
+        if (VERBOSE) {
+            std::cout << "Ground steering angle is " << steeringMsg.groundSteering()
+                      << " and pedal position is " << pedalPositionMsg.position() << std::endl;
         }
-    }
+
+        return true;
+    }};
+
+    od4.timeTrigger(FREQ, atFrequency);
 
     return 0;
 }

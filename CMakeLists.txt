@@ -44,7 +44,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 ################################################################################
 # Gather all object code first to avoid double compilation.
-add_library(${PROJECT_NAME}-core OBJECT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp)
+add_library(${PROJECT_NAME}-core OBJECT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp src/controller.cpp src/controller.h src/simplecontroller.cpp src/simplecontroller.h
+        src/manualcontroller.cpp src/manualcontroller.h)
 set(LIBRARIES Threads::Threads)
 
 ################################################################################
