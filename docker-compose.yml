@@ -32,7 +32,7 @@ sim-adc-bbblue-left:
     volumes:
       - ./simulation-map.txt:/opt/simulation-map.txt
     command: "/usr/bin/opendlv-sim-adc-bbblue --map-file=/opt/simulation-map.txt \
-        --x=0.0 --y=0.1 --yaw=1.57 --cid=111 --freq=10 --frame-id=0 --id=o"
+        --x=0.0 --y=0.1 --yaw=1.57 --cid=111 --freq=10 --frame-id=0 --id=0"
 
 sim-adc-bbblue-right:
     image: chalmersrevere/opendlv-sim-adc-bbblue-amd64:v0.0.4
@@ -40,10 +40,6 @@ sim-adc-bbblue-right:
       - ./simulation-map.txt:/opt/simulation-map.txt
     command: "/usr/bin/opendlv-sim-adc-bbblue --map-file=/opt/simulation-map.txt \
         --x=0.0 --y=0.1 --yaw=1.57 --cid=111 --freq=10 --frame-id=0 --id=1"
-
-logic-test-kiwi:
-    image: chalmersrevere/opendlv-logic-test-kiwi-amd64:v0.0.5
-    command: "/usr/bin/opendlv-logic-test-kiwi --cid=111 --freq=10 --frame-id=0"
 
 ui-default:
     image: chalmersrevere/opendlv-ui-default-amd64:v0.0.2
