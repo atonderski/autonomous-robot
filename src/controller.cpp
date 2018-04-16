@@ -2,7 +2,7 @@
 // Created by Adam Tonderski on 2018-04-16.
 //
 
-#include "controller.h"
+#include "controller.hpp"
 
 
 float Controller::getGroundSteeringAngle() noexcept {
@@ -74,4 +74,3 @@ double Controller::convertIrVoltageToDistance(float voltage) const noexcept {
     double distance = (2.5 - sensorVoltage) / 0.07;
     return distance;
 }
-

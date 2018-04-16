@@ -6,7 +6,7 @@
 #define AUTONOMOUS_ROBOT_SIMPLECONTROLLER_H
 
 
-#include "controller.h"
+#include "controller.hpp"
 
 class SimpleController : public Controller {
 public:

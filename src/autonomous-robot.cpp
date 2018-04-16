@@ -3,9 +3,9 @@
 
 #include "cluon-complete.hpp"
 #include "opendlv-standard-message-set.hpp"
-#include "controller.h"
-#include "manualcontroller.h"
-#include "simplecontroller.h"
+#include "controller.hpp"
+#include "manualcontroller.hpp"
+#include "simplecontroller.hpp"
 
 
 Controller& initializeController(std::map<std::string, std::string> commandlineArguments) {
@@ -34,7 +34,6 @@ int32_t main(int32_t argc, char **argv) {
     bool const VERBOSE{commandlineArguments.count("verbose") != 0};
     uint16_t const CID = static_cast<const uint16_t>(std::stoi(commandlineArguments["cid"]));
     float const FREQ = std::stof(commandlineArguments["freq"]);
-
 
     Controller& controller = initializeController(commandlineArguments);
 

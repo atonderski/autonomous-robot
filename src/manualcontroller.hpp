@@ -6,13 +6,14 @@
 #define AUTONOMOUS_ROBOT_MANUALCONTROLLER_H
 
 
-#include "controller.h"
+#include "controller.hpp"
 
 class ManualController : public Controller {
 
 public:
     ManualController(double pedalPosition, double steeringAngle, double timeToRun);
-    virtual ~ManualController() = default;
+
+    ~ManualController() override = default;
 
 private:
     void step(double d) noexcept override;

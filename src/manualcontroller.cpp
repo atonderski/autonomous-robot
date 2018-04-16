@@ -2,7 +2,7 @@
 // Created by Adam Tonderski on 2018-04-16.
 //
 
-#include "manualcontroller.h"
+#include "manualcontroller.hpp"
 
 
 ManualController::ManualController(double pedalPosition, double steeringAngle, double timeToRun) :

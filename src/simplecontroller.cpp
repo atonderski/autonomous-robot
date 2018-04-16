@@ -2,7 +2,7 @@
 // Created by Adam Tonderski on 2018-04-16.
 //
 
-#include "simplecontroller.h"
+#include "simplecontroller.hpp"
 
 void SimpleController::step(double) noexcept {
 
@@ -27,7 +27,7 @@ void SimpleController::step(double) noexcept {
         }
     } else {
         if (rightDistance < 0.2) {
-            groundSteeringAngle = 0.2;
+            groundSteeringAngle = -0.2;
         }
     }
 
