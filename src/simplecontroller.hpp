@@ -7,15 +7,21 @@
 
 
 #include "controller.hpp"
+#include <iostream>
+
 
 class SimpleController : public Controller {
 public:
     SimpleController() noexcept = default;
-    virtual ~SimpleController() = default;
+
+    ~SimpleController() override = default;
 
 public:
     void step(double) noexcept override;
 
+private:
+    float m_preferedDirection{0.5f};
+    bool m_isFollowingWall{false};
 
 };
 
