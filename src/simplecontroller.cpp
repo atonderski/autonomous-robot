@@ -14,14 +14,14 @@ void SimpleController::step(double) noexcept {
 
     float avoidanceSpeedFactor{0.0f};
     // Change speed based on proximity in front/back
-    if (frontDistance < 1.f) {
-        avoidanceSpeedFactor -= 0.3f * (1.f - frontDistance);
+    if (frontDistance < 0.5f) {
+        avoidanceSpeedFactor -= 0.1f * (0.5f - frontDistance) / 0.5f;
     }
     if (rearDistance < 0.5f) {
-        avoidanceSpeedFactor += 0.3f * (0.5f - rearDistance) / 0.5f;
+        avoidanceSpeedFactor += 0.1f * (0.5f - rearDistance) / 0.5f;
     }
     // add the default speed
-    float speed = avoidanceSpeedFactor + 0.2f;
+    float speed = avoidanceSpeedFactor + 0.15f;
 
     float avoidanceTurningFactor{0.f};
 
