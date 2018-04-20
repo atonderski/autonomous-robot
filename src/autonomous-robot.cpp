@@ -6,6 +6,7 @@
 #include "controller.hpp"
 #include "manualcontroller.hpp"
 #include "simplecontroller.hpp"
+#include "maintainDistance.hpp"
 
 
 Controller& initializeController(std::map<std::string, std::string> commandlineArguments) {
@@ -14,8 +15,10 @@ Controller& initializeController(std::map<std::string, std::string> commandlineA
         double steeringMagnitude = std::stod(commandlineArguments["steering"]);
         double runTime = std::stod(commandlineArguments["time"]);
         return *(new ManualController(pedalMagnitude, steeringMagnitude, runTime));
-    } else {
+    } else if (commandlineArguments.count("simple") != 0) {
         return *(new SimpleController());
+    } else { //if (commandlineArguments.count("maintain") != 0) {
+        return *(new MaintainDistance());
     }
 }
 
