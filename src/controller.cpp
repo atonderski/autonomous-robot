@@ -56,6 +56,7 @@ double Controller::getRightDistance() noexcept {
 }
 
 void Controller::setPedalPosition(double newPedalPosition) noexcept {
+    newPedalPosition = newPedalPosition * 0.08 + 0.12 * ((newPedalPosition > 0) - (newPedalPosition < 0));
     std::lock_guard<std::mutex> lock(m_pedalPositionMutex);
     m_pedalPosition = newPedalPosition;
 }
