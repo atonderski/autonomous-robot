@@ -50,5 +50,3 @@ ui-default:
     volumes:
       - ./simulation-map.txt:/srv/http/simulation-map.txt
     command: "--cid=111"
-    
-
