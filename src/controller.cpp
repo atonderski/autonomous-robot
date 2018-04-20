@@ -69,8 +69,19 @@ void Controller::setGrounSteeringAngle(double newGroundSteeringAngle) noexcept {
 double Controller::convertIrVoltageToDistance(float voltage) const noexcept {
     double voltageDividerR1 = 1000.0;
     double voltageDividerR2 = 1000.0;
+    double sensorVoltageLowerLimit = 0.3;
+    double sensorVoltageUpperLimit = 3.0;
 
     double sensorVoltage = (voltageDividerR1 + voltageDividerR2) / voltageDividerR2 * voltage;
-    double distance = (2.5 - sensorVoltage) / 0.07;
+
+    double distance; // meters
+    if (sensorVoltage < sensorVoltageLowerLimit) {
+      distance = std::numeric_limits<double>::max();
+    } else if (sensorVoltage > sensorVoltageUpperLimit) {
+      distance = 0;
+    } else {
+      distance = (13.3113/sensorVoltage - 0.5616)/100;
+    }
+
     return distance;
 }
