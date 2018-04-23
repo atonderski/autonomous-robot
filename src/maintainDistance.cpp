@@ -1,7 +1,7 @@
 
 #include "maintainDistance.hpp"
 
-void MaintainDistance::step(double) noexcept
+bool MaintainDistance::step(double) noexcept
 {
     double frontDistance = getFrontDistance();
     //double rearDistance = getRearDistance();
@@ -24,5 +24,7 @@ void MaintainDistance::step(double) noexcept
 
     setGrounSteeringAngle(groundSteeringAngle);
     setPedalPosition(speed);
+
+    return true;
 
 }

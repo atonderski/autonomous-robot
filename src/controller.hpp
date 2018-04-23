@@ -19,7 +19,7 @@ public:
     virtual ~Controller() = default;
 
 public:
-    virtual void step(double) noexcept = 0;
+    virtual bool step(double) noexcept = 0;
 
 public:
     float getGroundSteeringAngle() noexcept;

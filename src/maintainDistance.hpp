@@ -10,7 +10,7 @@ public:
     ~MaintainDistance() override = default;
 
 public:
-    void step(double) noexcept override;
+    bool step(double) noexcept override;
 
 private:
     

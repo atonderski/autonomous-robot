@@ -16,7 +16,7 @@ public:
     ~ManualController() override = default;
 
 private:
-    void step(double d) noexcept override;
+    bool step(double d) noexcept override;
 
 private:
     double pedalPosition;
