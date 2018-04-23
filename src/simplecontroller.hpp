@@ -5,10 +5,10 @@
 #ifndef AUTONOMOUS_ROBOT_SIMPLECONTROLLER_H
 #define AUTONOMOUS_ROBOT_SIMPLECONTROLLER_H
 
+#include <iostream>
+#include <cmath>
 
 #include "controller.hpp"
-#include <iostream>
-
 
 class SimpleController : public Controller {
 public:

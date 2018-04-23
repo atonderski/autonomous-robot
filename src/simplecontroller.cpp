@@ -2,7 +2,6 @@
 // Created by Adam Tonderski on 2018-04-16.
 //
 
-#include <cmath>
 #include "simplecontroller.hpp"
 
 void SimpleController::step(double) noexcept {
