@@ -76,7 +76,6 @@ int32_t main(int32_t argc, char **argv) {
             if (VERBOSE) {
                 std::cout << "Got unknown voltage message (from IR): " << voltageReading.voltage() << std::endl;
             }
-
         }
     }};
 
@@ -87,7 +86,7 @@ int32_t main(int32_t argc, char **argv) {
 
     double const DT = 1.0 / FREQ;
     auto atFrequency{[&VERBOSE, &controller, &od4, &DT]() -> bool {
-        controller.step(DT);
+        bool keepRunning = controller.step(DT);
 
         opendlv::proxy::GroundSteeringRequest steeringMsg;
         steeringMsg.groundSteering(controller.getGroundSteeringAngle());
@@ -102,7 +101,7 @@ int32_t main(int32_t argc, char **argv) {
                       << " and pedal position is " << pedalPositionMsg.position() << std::endl;
         }
 
-        return true;
+        return keepRunning;
     }};
 
     od4.timeTrigger(FREQ, atFrequency);

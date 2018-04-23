@@ -2,10 +2,9 @@
 // Created by Adam Tonderski on 2018-04-16.
 //
 
-#include <cmath>
 #include "simplecontroller.hpp"
 
-void SimpleController::step(double) noexcept {
+bool SimpleController::step(double) noexcept {
 
     double frontDistance = getFrontDistance();
     double rearDistance = getRearDistance();
@@ -68,4 +67,6 @@ void SimpleController::step(double) noexcept {
 
     setGrounSteeringAngle(groundSteeringAngle);
     setPedalPosition(speed);
+
+    return true;
 }

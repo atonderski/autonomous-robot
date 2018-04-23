@@ -5,10 +5,10 @@
 #ifndef AUTONOMOUS_ROBOT_SIMPLECONTROLLER_H
 #define AUTONOMOUS_ROBOT_SIMPLECONTROLLER_H
 
+#include <iostream>
+#include <cmath>
 
 #include "controller.hpp"
-#include <iostream>
-
 
 class SimpleController : public Controller {
 public:
@@ -17,7 +17,7 @@ public:
     ~SimpleController() override = default;
 
 public:
-    void step(double) noexcept override;
+    bool step(double) noexcept override;
 
 private:
     float m_preferedDirection{0.5f};

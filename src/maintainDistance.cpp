@@ -57,7 +57,7 @@ void UnlimitedStateWorks::update() noexcept
     }
 }
 
-void MaintainDistance::step(double) noexcept {
+bool MaintainDistance::step(double) noexcept {
     m_satanicMill.m_frontDistance = getFrontDistance();
     //m_satanicMill.m_rearDistance = getRearDistance();
     //m_satanicMill.m_leftDistance = getLeftDistance();
@@ -67,5 +67,6 @@ void MaintainDistance::step(double) noexcept {
 
     setGrounSteeringAngle(m_satanicMill.m_groundSteeringAngle);
     setPedalPosition(m_satanicMill.m_pedalPosition);
+    
+    return true;
 }
-

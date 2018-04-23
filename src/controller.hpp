@@ -6,6 +6,7 @@
 #define AUTONOMOUS_ROBOT_CONTROLLER_H
 
 #include <mutex>
+#include <limits>
 
 #include "opendlv-standard-message-set.hpp"
 
@@ -18,7 +19,7 @@ public:
     virtual ~Controller() = default;
 
 public:
-    virtual void step(double) noexcept = 0;
+    virtual bool step(double) noexcept = 0;
 
 public:
     float getGroundSteeringAngle() noexcept;
@@ -50,10 +51,10 @@ private:
     double convertIrVoltageToDistance(float) const noexcept;
 
 private:
-    double m_frontDistance{};
-    double m_rearDistance{};
-    double m_leftDistance{};
-    double m_rightDistance{};
+    double m_frontDistance{std::numeric_limits<double>::max()};
+    double m_rearDistance{std::numeric_limits<double>::max()};
+    double m_leftDistance{std::numeric_limits<double>::max()};
+    double m_rightDistance{std::numeric_limits<double>::max()};
     double m_groundSteeringAngle{};
     double m_pedalPosition{};
     std::mutex m_frontDistanceMutex;
