@@ -38,7 +38,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Is this one really necessary?
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Is this one really necessary? # Yes I need it for vim autocomplete
 
 ################################################################################
 # Extract cluon-msc from cluon-complete.hpp.
@@ -64,7 +64,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 ################################################################################
 # Gather all object code first to avoid double compilation.
-add_library(${PROJECT_NAME}-core OBJECT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp src/controller.cpp src/manualcontroller.cpp src/maintainDistance.cpp) #src/simplecontroller.cpp
+add_library(${PROJECT_NAME}-core OBJECT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp src/controller.cpp src/manualcontroller.cpp src/maintainDistance.cpp src/simplecontroller.cpp)
 set(LIBRARIES Threads::Threads)
 
 ################################################################################

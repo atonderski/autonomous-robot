@@ -19,9 +19,6 @@ RUN [ "cross-build-end" ]
 # Deploy.
 FROM pipill/armhf-alpine:edge
 RUN [ "cross-build-start" ]
-# RUN apk update && apk add --no-cache libstdc++
-COPY --from=builder /usr/lib/libstdc++.so.6 /usr/lib/
-COPY --from=builder /usr/lib/libgcc_s.so.1 /usr/lib/
 RUN mkdir /opt
 WORKDIR /opt
 COPY --from=builder /tmp/autonomous-robot ./

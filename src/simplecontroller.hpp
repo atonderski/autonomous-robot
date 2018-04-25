@@ -13,14 +13,13 @@
 class SimpleController : public Controller {
 public:
     SimpleController() noexcept = default;
-
     ~SimpleController() override = default;
 
 public:
     bool step(double) noexcept override;
 
 private:
-    float m_preferedDirection{0.5f};
+    double m_preferedDirection{0.5};
     bool m_isFollowingWall{false};
 
 };
