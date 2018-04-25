@@ -11,19 +11,16 @@
 class ManualController : public Controller {
 
 public:
-    ManualController(double pedalPosition, double steeringAngle, double timeToRun);
-
+    ManualController(double, double, double) noexcept;
     ~ManualController() override = default;
 
-private:
-    bool step(double d) noexcept override;
+    bool step(double) noexcept override;
 
 private:
-    double pedalPosition;
-    double steeringAngle;
-    double timeToRun;
-    double currentTime;
+    double m_manualPedalPosition;
+    double m_manualSteeringAngle;
+    double m_timeToRun;
+    double m_currentTime;
 };
-
 
 #endif //AUTONOMOUS_ROBOT_MANUALCONTROLLER_H

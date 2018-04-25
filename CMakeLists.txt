@@ -9,16 +9,36 @@ set(CLUON_COMPLETE cluon-complete-v0.0.65.hpp)
 ################################################################################
 # This project requires C++14 or newer.
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-# Threads are necessary for linking the resulting binaries as networking stuff is running in parallel.
+set(CMAKE_CXX_STANDARD_REQUIRED ON) # NEW!
+set(CMAKE_CXX_EXTENSIONS OFF) # NEW!
+# Strip unneeded symbols from binaries.
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s") # NEW!
+# Build a static binary.
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++") # NEW!
+# Add further warning levels.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
+    -D_XOPEN_SOURCE=700 \
+    -D_FORTIFY_SOURCE=2 \
+    -O2 \
+    -fstack-protector \
+    -fomit-frame-pointer \
+    -pipe \
+    -pedantic -pedantic-errors \
+    -Werror \
+    -Weffc++ \
+    -Wall -Wextra -Wshadow -Wdeprecated \
+    -Wdiv-by-zero -Wfloat-equal -Wfloat-conversion -Wsign-compare -Wpointer-arith \
+    -Wuninitialized -Wunreachable-code \
+    -Wunused -Wunused-function -Wunused-label -Wunused-parameter -Wunused-but-set-parameter -Wunused-but-set-variable \
+    -Wunused-value -Wunused-variable -Wunused-result \
+    -Wmissing-field-initializers -Wmissing-format-attribute -Wmissing-include-dirs -Wmissing-noreturn")
+
+
+# Threads are necessary for linking the resulting binaries as UDPReceiver is running in parallel.
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-################################################################################
-# Defining the relevant versions of OpenDLV Standard Message Set and libcluon.
-set(OPENDLV_STANDARD_MESSAGE_SET opendlv-standard-message-set-v0.9.4.odvd)
-set(CLUON_COMPLETE cluon-complete-v0.0.65.hpp)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Is this one really necessary?
 
 ################################################################################
 # Extract cluon-msc from cluon-complete.hpp.
@@ -44,7 +64,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 ################################################################################
 # Gather all object code first to avoid double compilation.
-add_library(${PROJECT_NAME}-core OBJECT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp src/controller.cpp src/simplecontroller.cpp src/manualcontroller.cpp src/maintainDistance.cpp)
+add_library(${PROJECT_NAME}-core OBJECT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp src/controller.cpp src/manualcontroller.cpp src/maintainDistance.cpp) #src/simplecontroller.cpp
 set(LIBRARIES Threads::Threads)
 
 ################################################################################
@@ -54,6 +74,11 @@ target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
 
 ################################################################################
 # Enable unit testing.
-#enable_testing()
-#add_executable(${PROJECT_NAME}-runner ${CMAKE_CURRENT_SOURCE_DIR}/tests/test-prime-checker.cpp $<TARGET_OBJECTS:${PROJECT_NAME}-core>)
-#add_test(NAME ${PROJECT_NAME}-runner COMMAND ${PROJECT_NAME}-runner)
+# enable_testing()
+# add_executable(${PROJECT_NAME}-runner ${CMAKE_CURRENT_SOURCE_DIR}/tests/test-prime-checker.cpp $<TARGET_OBJECTS:${PROJECT_NAME}-core>)
+# target_link_libraries(${PROJECT_NAME}-runner ${LIBRARIES})
+# add_test(NAME ${PROJECT_NAME}-runner COMMAND ${PROJECT_NAME}-runner)
+
+################################################################################
+# Install executable.
+# install(TARGETS ${PROJECT_NAME} DESTINATION bin COMPONENT ${PROJECT_NAME})

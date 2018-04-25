@@ -65,7 +65,7 @@ bool SimpleController::step(double) noexcept {
     }
     float groundSteeringAngle = avoidanceTurningFactor == 0.0f ? m_preferedDirection : avoidanceTurningFactor;
 
-    setGrounSteeringAngle(groundSteeringAngle);
+    setGroundSteeringAngle(groundSteeringAngle);
     setPedalPosition(speed);
 
     return true;

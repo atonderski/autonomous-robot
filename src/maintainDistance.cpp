@@ -50,7 +50,7 @@ bool MaintainDistance::step(double) noexcept {
 
     m_stateMachine.update();
 
-    setGrounSteeringAngle(m_stateMachine.m_groundSteeringAngle);
+    setGroundSteeringAngle(m_stateMachine.m_groundSteeringAngle);
     setPedalPosition(m_stateMachine.m_pedalPosition);
     
     return true;

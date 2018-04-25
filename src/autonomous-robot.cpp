@@ -15,9 +15,9 @@ Controller& initializeController(std::map<std::string, std::string> commandlineA
         double steeringMagnitude = std::stod(commandlineArguments["steering"]);
         double runTime = std::stod(commandlineArguments["time"]);
         return *(new ManualController(pedalMagnitude, steeringMagnitude, runTime));
-    } else if (commandlineArguments.count("simple") != 0) {
+    } /*else if (commandlineArguments.count("simple") != 0) {
         return *(new SimpleController());
-    } else { //if (commandlineArguments.count("maintain") != 0) {
+    } */else { //if (commandlineArguments.count("maintain") != 0) {
         return *(new MaintainDistance());
     }
 }
@@ -79,7 +79,6 @@ int32_t main(int32_t argc, char **argv) {
         }
     }};
 
-
     cluon::OD4Session od4{CID};
     od4.dataTrigger(opendlv::proxy::DistanceReading::ID(), onDistanceReading);
     od4.dataTrigger(opendlv::proxy::VoltageReading::ID(), onVoltageReading);
@@ -93,7 +92,7 @@ int32_t main(int32_t argc, char **argv) {
         opendlv::proxy::PedalPositionRequest pedalPositionMsg;
         pedalPositionMsg.position(controller.getPedalPosition());
 
-        cluon::data::TimeStamp sampleTime;
+        cluon::data::TimeStamp sampleTime{cluon::time::now()};
         od4.send(steeringMsg, sampleTime, 0);
         od4.send(pedalPositionMsg, sampleTime, 0);
         if (VERBOSE) {

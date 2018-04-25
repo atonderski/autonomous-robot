@@ -14,49 +14,36 @@
 class Controller {
 
 public:
-    Controller() noexcept = default;
-
+    Controller() noexcept;
     virtual ~Controller() = default;
 
-public:
     virtual bool step(double) noexcept = 0;
 
-public:
     float getGroundSteeringAngle() noexcept;
-
     float getPedalPosition() noexcept;
-
     void setFrontUltrasonic(float) noexcept;
-
     void setRearUltrasonic(float) noexcept;
-
     void setLeftIr(float) noexcept;
-
     void setRightIr(float) noexcept;
 
 protected:
     double getFrontDistance() noexcept;
-
     double getRearDistance() noexcept;
-
     double getLeftDistance() noexcept;
-
     double getRightDistance() noexcept;
-
     void setPedalPosition(double) noexcept;
-
-    void setGrounSteeringAngle(double) noexcept;
+    void setGroundSteeringAngle(double) noexcept;
 
 private:
+    double scalePedalPosition(double) const noexcept;
     double convertIrVoltageToDistance(float) const noexcept;
 
-private:
-    double m_frontDistance{std::numeric_limits<double>::max()};
-    double m_rearDistance{std::numeric_limits<double>::max()};
-    double m_leftDistance{std::numeric_limits<double>::max()};
-    double m_rightDistance{std::numeric_limits<double>::max()};
-    double m_groundSteeringAngle{};
-    double m_pedalPosition{};
+    double m_frontDistance;
+    double m_rearDistance;
+    double m_leftDistance;
+    double m_rightDistance;
+    double m_groundSteeringAngle;
+    double m_pedalPosition;
     std::mutex m_frontDistanceMutex;
     std::mutex m_rearDistanceMutex;
     std::mutex m_leftDistanceMutex;
