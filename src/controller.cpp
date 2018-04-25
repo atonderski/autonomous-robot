@@ -55,8 +55,17 @@ double Controller::getRightDistance() noexcept {
     return m_rightDistance;
 }
 
+/*  setPedalPosition rescales input given as a double in
+    range from -1 to +1, in order to avoid deadzones in motor controller.
+    Forward range out: [0.12,0.20]
+    Reverse range out: [-0.46,-0.80]
+    Stationary requires exactly 0 */
 void Controller::setPedalPosition(double newPedalPosition) noexcept {
-    newPedalPosition = newPedalPosition * 0.08 + 0.12 * ((newPedalPosition > 0) - (newPedalPosition < 0));
+    if (newPedalPosition > 0) {
+        newPedalPosition = newPedalPosition * 0.08 + 0.12;
+    } else if (newPedalPosition < 0) {
+        newPedalPosition = newPedalPosition * 0.34 - 0.46;
+    } 
     std::lock_guard<std::mutex> lock(m_pedalPositionMutex);
     m_pedalPosition = newPedalPosition;
 }

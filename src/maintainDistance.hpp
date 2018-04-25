@@ -2,35 +2,21 @@
 #define AUTONOMOUS_ROBOT_MAINTAIN_DISTANCE
 
 #include "controller.hpp"
+#include "finiteStateMachine.hpp"
 #include <limits>
 #include <iostream>
 
-class UnlimitedStateWorks{
+class MaintainDistanceStates : public FiniteStateMachine {
     public:
+        MaintainDistanceStates() noexcept;
+        ~MaintainDistanceStates() = default;
+
         void initialState() noexcept;
-        void update() noexcept;
-        
-        UnlimitedStateWorks() noexcept;
-        ~UnlimitedStateWorks() = default;
+        void stateMoveTowards() noexcept;
+        void stateMoveAway() noexcept;
+        void stateStationary() noexcept;
 
-        void stateCloseDistance() noexcept;
-        void stateMakeDistance() noexcept;
-        void stateCorrectDistance() noexcept;
-
-        double m_frontDistance;
-        double m_rearDistance;
-        double m_leftDistance;
-        double m_rightDistance;
-        double m_groundSteeringAngle;
-        double m_pedalPosition;
-    
     private:
-        UnlimitedStateWorks(UnlimitedStateWorks const &) = delete;
-        UnlimitedStateWorks(UnlimitedStateWorks &&) = delete;
-        UnlimitedStateWorks &operator=(UnlimitedStateWorks const &) = delete;
-        UnlimitedStateWorks &operator=(UnlimitedStateWorks &&) = delete;
-        
-        void (UnlimitedStateWorks::* activeState)();
         double const CRITICAL_DISTANCE;
         double const MARGIN;
 };
@@ -44,7 +30,7 @@ public:
     bool step(double) noexcept override;
 
 private:
-    UnlimitedStateWorks m_satanicMill{};
+    MaintainDistanceStates m_stateMachine{};
 
 };
 
