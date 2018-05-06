@@ -1,24 +1,29 @@
 #include <chrono>
 #include <iostream>
+#include <chrono>
 
 #include "cluon-complete.hpp"
 #include "opendlv-standard-message-set.hpp"
 #include "controller.hpp"
 #include "manualcontroller.hpp"
-#include "simplecontroller.hpp"
-#include "maintainDistance.hpp"
+#include "subsumer.hpp"
 
 
-Controller& initializeController(std::map<std::string, std::string> commandlineArguments) {
+Controller& initializeController(std::map<std::string, std::string> commandlineArguments, double const DT) {
     if (commandlineArguments.count("manual") != 0) {
-        double pedalMagnitude = std::stod(commandlineArguments["pedal"]);
-        double steeringMagnitude = std::stod(commandlineArguments["steering"]);
+        double pedalMagnitude = 0.0;
+        if (commandlineArguments.count("pedal") != 0) {
+            pedalMagnitude = std::stod(commandlineArguments["pedal"]);
+        }
+        double steeringMagnitude = 0.0;
+        if (commandlineArguments.count("steering") != 0) {
+            steeringMagnitude = std::stod(commandlineArguments["steering"]);
+        }
         double runTime = std::stod(commandlineArguments["time"]);
-        return *(new ManualController(pedalMagnitude, steeringMagnitude, runTime));
-    } else if (commandlineArguments.count("simple") != 0) {
-        return *(new SimpleController());
-    } else { //if (commandlineArguments.count("maintain") != 0) {
-        return *(new MaintainDistance());
+        bool printSensorValues = commandlineArguments.count("print") != 0;
+        return *(new ManualController(DT, pedalMagnitude, steeringMagnitude, runTime, printSensorValues));
+    } else { // else if (commandlineArguments.count("subsumer") != 0) {
+        return *(new Subsumer(DT));
     }
 }
 
@@ -37,8 +42,9 @@ int32_t main(int32_t argc, char **argv) {
     bool const VERBOSE{commandlineArguments.count("verbose") != 0};
     uint16_t const CID = static_cast<const uint16_t>(std::stoi(commandlineArguments["cid"]));
     float const FREQ = std::stof(commandlineArguments["freq"]);
+    double const DT = 1.0 / FREQ;
 
-    Controller& controller = initializeController(commandlineArguments);
+    Controller& controller = initializeController(commandlineArguments, DT);
 
     auto onDistanceReading{[&controller, &VERBOSE](cluon::data::Envelope &&envelope) {
         uint32_t const senderStamp = envelope.senderStamp();
@@ -83,9 +89,12 @@ int32_t main(int32_t argc, char **argv) {
     od4.dataTrigger(opendlv::proxy::DistanceReading::ID(), onDistanceReading);
     od4.dataTrigger(opendlv::proxy::VoltageReading::ID(), onVoltageReading);
 
-    double const DT = 1.0 / FREQ;
-    auto atFrequency{[&VERBOSE, &controller, &od4, &DT]() -> bool {
-        bool keepRunning = controller.step(DT);
+    auto atFrequency{[&VERBOSE, &controller, &od4]() -> bool {
+        auto start{std::chrono::steady_clock::now()};
+        bool keepRunning = controller.step();
+        auto end{std::chrono::steady_clock::now()};
+        auto diff = end - start;
+        std::cout << std::chrono::duration<double,std::nano>(diff).count() << " ns" << std::endl;
 
         opendlv::proxy::GroundSteeringRequest steeringMsg;
         steeringMsg.groundSteering(controller.getGroundSteeringAngle());

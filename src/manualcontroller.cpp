@@ -4,23 +4,40 @@
 
 #include "manualcontroller.hpp"
 
-ManualController::ManualController(double pedalPosition, double steeringAngle, double timeToRun) noexcept:
-    m_manualPedalPosition{pedalPosition},
-    m_manualSteeringAngle{steeringAngle},
-    m_timeToRun{timeToRun},
-    m_currentTime{0.0}
-{
-}
+bool ManualController::step() noexcept {
+    
+    if (m_printSensorValues) {
+        if (m_delayTimer > 0.5) {
+            printSensorValues();
+            m_delayTimer = 0;
+        } else {
+            m_delayTimer += m_dt;
+        }
+    }
 
-bool ManualController::step(double dt) noexcept {
     if (m_currentTime < m_timeToRun) {
-        setPedalPosition(m_manualPedalPosition);
+        //setPedalPosition(m_manualPedalPosition);
+        setPedalPositionUnscaled(m_manualPedalPosition);
         setGroundSteeringAngle(m_manualSteeringAngle);
-        m_currentTime += dt;
+        m_currentTime += m_dt;
         return true;
     } else {
         setPedalPosition(0.0);
         setGroundSteeringAngle(0.0);
         return false;
     }
+}
+
+void ManualController::printSensorValues() noexcept {
+    double front{getFrontDistance()};
+    double rear{getRearDistance()};
+    double left{getLeftDistance()};
+    double right{getRightDistance()};
+
+    std::cout   << std::fixed << std::setprecision(3)
+                << "Front: " << front
+                << "\tRear: " << rear
+                << "\tLeft: " << left
+                << "\tRight: " << right
+                << std::endl;
 }

@@ -64,7 +64,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 ################################################################################
 # Gather all object code first to avoid double compilation.
-add_library(${PROJECT_NAME}-core OBJECT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp src/controller.cpp src/manualcontroller.cpp src/maintainDistance.cpp src/simplecontroller.cpp)
+add_library(${PROJECT_NAME}-core OBJECT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp src/manualcontroller.cpp src/subsumer.cpp src/behaviours/behaviour-reflex.cpp src/behaviours/behaviour-motivation.cpp src/behaviours/behaviour-avoid.cpp)
 set(LIBRARIES Threads::Threads)
 
 ################################################################################
