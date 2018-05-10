@@ -114,9 +114,9 @@ class Controller {
         }
         double scalePedalPosition(double logicPedalPosition) const noexcept {
             if (logicPedalPosition > 0) {
-                return logicPedalPosition * 0.08 + 0.12;
+                return logicPedalPosition * 0.09 + 0.11;
             } else if (logicPedalPosition < 0) {
-                return logicPedalPosition * 0.34 - 0.46;
+                return logicPedalPosition * 0.18 - 0.45;
             } else {
                 return 0;
             }

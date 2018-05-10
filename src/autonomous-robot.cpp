@@ -43,6 +43,8 @@ int32_t main(int32_t argc, char **argv) {
     uint16_t const CID = static_cast<const uint16_t>(std::stoi(commandlineArguments["cid"]));
     float const FREQ = std::stof(commandlineArguments["freq"]);
     double const DT = 1.0 / FREQ;
+    bool scalePedalToSimulation = commandlineArguments.count("sim") != 0;
+    bool measureTimeOfStep = commandlineArguments.count("meter") != 0;
 
     Controller& controller = initializeController(commandlineArguments, DT);
 
@@ -89,17 +91,28 @@ int32_t main(int32_t argc, char **argv) {
     od4.dataTrigger(opendlv::proxy::DistanceReading::ID(), onDistanceReading);
     od4.dataTrigger(opendlv::proxy::VoltageReading::ID(), onVoltageReading);
 
-    auto atFrequency{[&VERBOSE, &controller, &od4]() -> bool {
-        auto start{std::chrono::steady_clock::now()};
-        bool keepRunning = controller.step();
-        auto end{std::chrono::steady_clock::now()};
-        auto diff = end - start;
-        std::cout << std::chrono::duration<double,std::nano>(diff).count() << " ns" << std::endl;
+    auto atFrequency{[&VERBOSE, &controller, &od4, &measureTimeOfStep, &scalePedalToSimulation]() -> bool {
+        
+        bool keepRunning;
+        if (measureTimeOfStep) {
+            auto start{std::chrono::steady_clock::now()};
+            keepRunning = controller.step();
+            auto end{std::chrono::steady_clock::now()};
+            auto diff = end - start;
+            std::cout << std::chrono::duration<double,std::micro>(diff).count() << " us" << std::endl;
+        } else {
+            keepRunning = controller.step();
+        }
 
         opendlv::proxy::GroundSteeringRequest steeringMsg;
         steeringMsg.groundSteering(controller.getGroundSteeringAngle());
+        
         opendlv::proxy::PedalPositionRequest pedalPositionMsg;
-        pedalPositionMsg.position(controller.getPedalPosition());
+        if (scalePedalToSimulation) {
+            pedalPositionMsg.position(4.4f * controller.getPedalPosition());
+        } else {
+            pedalPositionMsg.position(controller.getPedalPosition());
+        }
 
         cluon::data::TimeStamp sampleTime{cluon::time::now()};
         od4.send(steeringMsg, sampleTime, 0);

@@ -11,20 +11,22 @@ bool Subsumer::step() noexcept {
     m_behaviourAvoid.update();
     m_behaviourMotivation.update();
 
+    int pedalLogic;
     if (m_behaviourReflex.getActivationStatus()) {
         setGroundSteeringAngle(m_behaviourReflex.m_groundSteeringAngle);
-        setPedalPosition(m_behaviourReflex.m_pedalPosition);
+        pedalLogic = m_behaviourReflex.m_pedalLogic;
     } else if (m_behaviourAvoid.getActivationStatus()) {
         setGroundSteeringAngle(m_behaviourAvoid.m_groundSteeringAngle);
-        setPedalPosition(m_behaviourAvoid.m_pedalPosition);
+        pedalLogic = m_behaviourAvoid.m_pedalLogic;
     } else if (m_behaviourMotivation.getActivationStatus()) {
         setGroundSteeringAngle(m_behaviourMotivation.m_groundSteeringAngle);
-        setPedalPosition(m_behaviourMotivation.m_pedalPosition);
+        pedalLogic = m_behaviourMotivation.m_pedalLogic;
     } else {
         setGroundSteeringAngle(0);
-        setPedalPosition(0);
+        pedalLogic = 0;
     }
     
-    
+    m_accelerationRegulator.setPedalLogic(pedalLogic);
+    setPedalPositionUnscaled(m_accelerationRegulator.getPedalPosition());
     return true;
 }

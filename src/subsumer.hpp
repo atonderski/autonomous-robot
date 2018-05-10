@@ -4,6 +4,7 @@
 #include "controller.hpp"
 #include <limits>
 #include <iostream>
+#include "accelerationregulator.hpp"
 #include "behaviours/behaviour-reflex.hpp"
 #include "behaviours/behaviour-avoid.hpp"
 #include "behaviours/behaviour-motivation.hpp"
@@ -17,6 +18,7 @@ public:
         , m_stepRear{}
         , m_stepLeft{}
         , m_stepRight{}
+        , m_accelerationRegulator{DT}
         , m_behaviourReflex{DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
         , m_behaviourAvoid{DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
         , m_behaviourMotivation{DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
@@ -33,6 +35,7 @@ private:
     double m_stepLeft;
     double m_stepRight;
 
+    AccelerationRegulator m_accelerationRegulator;
     BehaviourReflex m_behaviourReflex;
     BehaviourAvoid m_behaviourAvoid;
     BehaviourMotivation m_behaviourMotivation;

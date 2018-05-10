@@ -7,28 +7,29 @@ class AugmentedFiniteStateMachine {
     public:
         AugmentedFiniteStateMachine(double const DT, double *stepFront, double *stepRear, double *stepLeft, double *stepRight) noexcept
             : m_groundSteeringAngle{0}
-            , m_pedalPosition{0}
+            , m_pedalLogic{0}
             , m_dt{DT}
             , m_pFrontDistance{stepFront}
             , m_pRearDistance{stepRear}
             , m_pLeftDistance{stepLeft}
             , m_pRightDistance{stepRight}
-            // Action
-            , MAX_STEERING_LEFT{0.5}
-            , MAX_STEERING_RIGHT{-0.5}
-            , MIN_PEDAL_FORWARD{0.01}
-            , MIN_PEDAL_BACKWARD{-0.16}
-            // Motivation
-            , MOTIVATION_ACT_FRONT{0.80f}
-            // Reflex
-            , REFLEX_CRITICAL_FRONT{0.35f}
-            , REFLEX_STOP_FRONT{0.70f}
-            , REFLEX_STOP_REAR{0.35f}
-            // Avoid
-            , AVOID_ACT_FRONT{0.80f}
-            , AVOID_ACT_LEFTRIGHT{0.30f}
-            , AVOID_STOP_REAR{1.00f}
-            // Private
+            // Parameter space
+            , MAX_STEERING_LEFT             {0.50}
+            , MAX_STEERING_RIGHT            {-0.50}
+            , SCAN_STEERING_LEFT            {0.25}
+            , SCAN_STEERING_RIGHT           {-0.25}
+            , MIN_PEDAL_FORWARD             {1}
+            , MIN_PEDAL_BACKWARD            {-1}
+            , MOTIVATION_ACT_FRONT          {0.40f}
+            , MOTIVATION_SCAN_SEMIPERIOD    {0.60f}
+            , REFLEX_CRITICAL_FRONT         {0.40f}
+            , REFLEX_STOP_FRONT             {0.70f}
+            , REFLEX_STOP_REAR              {0.40f}
+            , REFLEX_STOP_LEFTRIGHT         {0.30f}
+            , AVOID_ACT_FRONT               {0.90f}
+            , AVOID_ACT_LEFTRIGHT           {0.36f}
+            , AVOID_TURNTIME                {0.60f}
+            // Edge of space
             , activeState{0}
         {
         }
@@ -37,6 +38,7 @@ class AugmentedFiniteStateMachine {
         template <typename Container>
         void setState(void (Container::* newState)()) noexcept {
             activeState = static_cast<void(AugmentedFiniteStateMachine::*)()>(newState);
+            update();
         }
         void setState() noexcept {
             activeState = 0;
@@ -57,7 +59,7 @@ class AugmentedFiniteStateMachine {
         virtual void initialState() noexcept = 0;
 
         double m_groundSteeringAngle;
-        double m_pedalPosition;
+        int m_pedalLogic;
 
     protected:
         double const m_dt;
@@ -68,15 +70,19 @@ class AugmentedFiniteStateMachine {
         
         double const MAX_STEERING_LEFT;
         double const MAX_STEERING_RIGHT;
-        double const MIN_PEDAL_FORWARD;
-        double const MIN_PEDAL_BACKWARD;
+        double const SCAN_STEERING_LEFT;
+        double const SCAN_STEERING_RIGHT;
+        int const MIN_PEDAL_FORWARD;
+        int const MIN_PEDAL_BACKWARD;
         float const MOTIVATION_ACT_FRONT;
+        float const MOTIVATION_SCAN_SEMIPERIOD;
         float const REFLEX_CRITICAL_FRONT;
         float const REFLEX_STOP_FRONT;
         float const REFLEX_STOP_REAR;
+        float const REFLEX_STOP_LEFTRIGHT;
         float const AVOID_ACT_FRONT;
         float const AVOID_ACT_LEFTRIGHT;
-        float const AVOID_STOP_REAR;
+        float const AVOID_TURNTIME;
 
     private:
         AugmentedFiniteStateMachine(AugmentedFiniteStateMachine const &) = delete;
