@@ -2,8 +2,8 @@
 
 class BehaviourAvoid : public AugmentedFiniteStateMachine {
     public:
-        BehaviourAvoid(double const DT, double *stepFront, double *stepRear, double *stepLeft, double *stepRight) noexcept
-            : AugmentedFiniteStateMachine(DT, stepFront, stepRear, stepLeft, stepRight)
+        BehaviourAvoid(ConfigurationValues m_conf, double const DT, double *stepFront, double *stepRear, double *stepLeft, double *stepRight) noexcept
+            : AugmentedFiniteStateMachine(m_conf, DT, stepFront, stepRear, stepLeft, stepRight)
             , previousTurnRight{}
             , m_countdown{AVOID_TURNTIME}
         {

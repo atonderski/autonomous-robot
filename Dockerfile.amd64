@@ -17,4 +17,5 @@ FROM alpine:3.7
 RUN mkdir /opt
 WORKDIR /opt
 COPY --from=builder /tmp/autonomous-robot ./ 
+COPY --from=builder /opt/sources/subsumer.conf ./
 ENTRYPOINT ["/opt/autonomous-robot"]

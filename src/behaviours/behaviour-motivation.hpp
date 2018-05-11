@@ -2,8 +2,8 @@
 
 class BehaviourMotivation : public AugmentedFiniteStateMachine {
     public:
-        BehaviourMotivation(double const DT, double *stepFront, double *stepRear, double *stepLeft, double *stepRight) noexcept
-            : AugmentedFiniteStateMachine(DT, stepFront, stepRear, stepLeft, stepRight)
+        BehaviourMotivation(ConfigurationValues m_conf, double const DT, double *stepFront, double *stepRear, double *stepLeft, double *stepRight) noexcept
+            : AugmentedFiniteStateMachine(m_conf, DT, stepFront, stepRear, stepLeft, stepRight)
             , m_countdown{0}
         {
         }

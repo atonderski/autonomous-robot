@@ -3,17 +3,23 @@
 
 class AccelerationRegulator {
     public:
-        AccelerationRegulator(double const in_DT) noexcept
+        AccelerationRegulator(ConfigurationValues m_conf, double const in_DT) noexcept
         : m_currentPedalLogic{0}
         , m_counter{0}
         , DT{in_DT}
-        , TIME_SPLIT{0.6}
-        , FORWARD_PEDAL_HIGH{0.13}
-        , FORWARD_PEDAL_LOW{0.11}
-        , BACKWARD_PEDAL_HIGH{-0.50}
-        , BACKWARD_PEDAL_LOW{-0.45}
+        , TIME_SPLIT(m_conf.confMap.count("TIME_SPLIT") ? m_conf.confMap["TIME_SPLIT"] : 0.6)
+        , FORWARD_PEDAL_HIGH(m_conf.confMap.count("FORWARD_PEDAL_HIGH") ? m_conf.confMap["FORWARD_PEDAL_HIGH"] : 0.13)
+        , FORWARD_PEDAL_LOW(m_conf.confMap.count("FORWARD_PEDAL_LOW") ? m_conf.confMap["FORWARD_PEDAL_LOW"] : 0.11)
+        , BACKWARD_PEDAL_HIGH(m_conf.confMap.count("BACKWARD_PEDAL_HIGH") ? m_conf.confMap["BACKWARD_PEDAL_HIGH"] : -0.50)
+        , BACKWARD_PEDAL_LOW(m_conf.confMap.count("BACKWARD_PEDAL_LOW") ? m_conf.confMap["BACKWARD_PEDAL_LOW"] : -0.45)
         {
+            std::cout   << TIME_SPLIT << " "
+                        << FORWARD_PEDAL_HIGH << " "
+                        << FORWARD_PEDAL_LOW << " "
+                        << BACKWARD_PEDAL_HIGH << " "
+                        << BACKWARD_PEDAL_LOW << std::endl;
         }
+        ~AccelerationRegulator() = default;
 
         void setPedalLogic(int newPedalLogic) noexcept {
             if (newPedalLogic != m_currentPedalLogic) {

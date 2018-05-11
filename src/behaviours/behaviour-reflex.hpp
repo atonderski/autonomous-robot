@@ -2,8 +2,8 @@
 
 class BehaviourReflex : public AugmentedFiniteStateMachine {
     public:
-        BehaviourReflex(double const DT, double *stepFront, double *stepRear, double *stepLeft, double *stepRight) noexcept
-            : AugmentedFiniteStateMachine(DT, stepFront, stepRear, stepLeft, stepRight)
+        BehaviourReflex(ConfigurationValues m_conf, double const DT, double *stepFront, double *stepRear, double *stepLeft, double *stepRight) noexcept
+            : AugmentedFiniteStateMachine(m_conf, DT, stepFront, stepRear, stepLeft, stepRight)
         {
         }
         ~BehaviourReflex() = default;

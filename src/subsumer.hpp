@@ -4,6 +4,7 @@
 #include "controller.hpp"
 #include <limits>
 #include <iostream>
+#include "configurationvalues.hpp"
 #include "accelerationregulator.hpp"
 #include "behaviours/behaviour-reflex.hpp"
 #include "behaviours/behaviour-avoid.hpp"
@@ -18,10 +19,11 @@ public:
         , m_stepRear{}
         , m_stepLeft{}
         , m_stepRight{}
-        , m_accelerationRegulator{DT}
-        , m_behaviourReflex{DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
-        , m_behaviourAvoid{DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
-        , m_behaviourMotivation{DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
+        , m_conf{"/opt/subsumer.conf"}
+        , m_accelerationRegulator{m_conf, DT}
+        , m_behaviourReflex{m_conf, DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
+        , m_behaviourAvoid{m_conf, DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
+        , m_behaviourMotivation{m_conf, DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
     {
     }
     ~Subsumer() override = default;
@@ -35,6 +37,7 @@ private:
     double m_stepLeft;
     double m_stepRight;
 
+    ConfigurationValues m_conf;
     AccelerationRegulator m_accelerationRegulator;
     BehaviourReflex m_behaviourReflex;
     BehaviourAvoid m_behaviourAvoid;

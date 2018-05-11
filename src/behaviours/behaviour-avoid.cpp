@@ -21,7 +21,7 @@ void BehaviourAvoid::stateTurnLeft() noexcept {
         setState();
     } else {
         m_groundSteeringAngle = MAX_STEERING_LEFT;
-        m_pedalLogic = MIN_PEDAL_FORWARD;
+        m_pedalLogic = 1;
         if (*m_pRightDistance < AVOID_ACT_LEFTRIGHT) {
             m_countdown = AVOID_TURNTIME;
         } else {
@@ -37,7 +37,7 @@ void BehaviourAvoid::stateTurnRight() noexcept {
         setState();
     } else {
         m_groundSteeringAngle = MAX_STEERING_RIGHT;
-        m_pedalLogic = MIN_PEDAL_FORWARD;
+        m_pedalLogic = 1;
         if (*m_pLeftDistance < AVOID_ACT_LEFTRIGHT) {
             m_countdown = AVOID_TURNTIME;
         } else {
