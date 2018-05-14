@@ -24,5 +24,6 @@ WORKDIR /opt
 COPY --from=builder /tmp/autonomous-robot ./
 COPY --from=builder /opt/sources/subsumer.conf ./
 COPY --from=builder /opt/sources/pathfinder.conf ./
+COPY --from=builder /opt/sources/simulation-map.txt ./
 ENTRYPOINT ["/opt/autonomous-robot"]
 RUN [ "cross-build-end" ]

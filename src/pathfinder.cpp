@@ -18,19 +18,15 @@ bool Pathfinder::step() noexcept {
     if (m_behaviourReflex.getActivationStatus()) {
         setGroundSteeringAngle(m_behaviourReflex.m_groundSteeringAngle);
         pedalLogic = m_behaviourReflex.m_pedalLogic;
-        //std::cout << "Now in REFLEX State" << std::endl;
     } else if (m_behaviourAvoid.getActivationStatus()) {
         setGroundSteeringAngle(m_behaviourAvoid.m_groundSteeringAngle);
         pedalLogic = m_behaviourAvoid.m_pedalLogic;
-        //std::cout << "Now in AVOID State" << std::endl;
     } else if (m_behaviourFollowPath.getActivationStatus()) {
         setGroundSteeringAngle(m_behaviourFollowPath.m_groundSteeringAngle);
         pedalLogic = m_behaviourFollowPath.m_pedalLogic;
-        //std::cout << "Now in PATHFOLLOW State" << std::endl;
     } else {
         setGroundSteeringAngle(0);
         pedalLogic = 0;
-        //std::cout << "Now in Catch-all-state State" << std::endl;
     }
     
     m_accelerationRegulator.setPedalLogic(pedalLogic);
