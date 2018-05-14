@@ -1,3 +1,6 @@
+#ifndef BEHAVIOUR_MOTIVATION
+#define BEHAVIOUR_MOTIVATION
+
 #include "augmentedfinitestatemachine.hpp"
 
 class BehaviourMotivation : public AugmentedFiniteStateMachine {
@@ -7,7 +10,7 @@ class BehaviourMotivation : public AugmentedFiniteStateMachine {
             , m_countdown{0}
         {
         }
-        ~BehaviourMotivation() = default;
+        ~BehaviourMotivation() override = default;
 
         void initialState() noexcept override;
         void stateMotivated() noexcept;
@@ -16,3 +19,5 @@ class BehaviourMotivation : public AugmentedFiniteStateMachine {
     private:
         double m_countdown;
 };
+
+#endif

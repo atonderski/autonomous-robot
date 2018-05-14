@@ -1,3 +1,6 @@
+#ifndef BEHAVIOUR_REFLEX
+#define BEHAVIOUR_REFLEX
+
 #include "augmentedfinitestatemachine.hpp"
 
 class BehaviourReflex : public AugmentedFiniteStateMachine {
@@ -6,9 +9,11 @@ class BehaviourReflex : public AugmentedFiniteStateMachine {
             : AugmentedFiniteStateMachine(m_conf, DT, stepFront, stepRear, stepLeft, stepRight)
         {
         }
-        ~BehaviourReflex() = default;
+        ~BehaviourReflex() override = default;
 
         void initialState() noexcept override;
         void stateMoveBack() noexcept;
 
 };
+
+#endif

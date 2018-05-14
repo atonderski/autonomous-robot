@@ -1,3 +1,6 @@
+#ifndef BEHAVIOUR_AVOID
+#define BEHAVIOUR_AVOID
+
 #include "augmentedfinitestatemachine.hpp"
 
 class BehaviourAvoid : public AugmentedFiniteStateMachine {
@@ -8,7 +11,7 @@ class BehaviourAvoid : public AugmentedFiniteStateMachine {
             , m_countdown{AVOID_TURNTIME}
         {
         }
-        ~BehaviourAvoid() = default;
+        ~BehaviourAvoid() override = default;
 
         void initialState() noexcept override;
         void stateTurnLeft() noexcept;
@@ -19,3 +22,5 @@ class BehaviourAvoid : public AugmentedFiniteStateMachine {
         double m_countdown;
 
 };
+
+#endif

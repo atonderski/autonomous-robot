@@ -21,12 +21,18 @@ class Controller {
         , m_rightVoltage{}
         , m_groundSteeringAngle{}
         , m_pedalPosition{}
+        , m_x{}
+        , m_y{}
+        , m_yaw{}
         , m_frontDistanceMutex{}
         , m_rearDistanceMutex{}
         , m_leftVoltageMutex{}
         , m_rightVoltageMutex{}
         , m_groundSteeringAngleMutex{}
         , m_pedalPositionMutex{}
+        , m_xMutex{}
+        , m_yMutex{}
+        , m_yawMutex{}
         {
         }
 
@@ -58,6 +64,18 @@ class Controller {
             std::lock_guard<std::mutex> lock(m_rightVoltageMutex);
             m_rightVoltage = rightIrReading;
         }
+        void setX(float xReading) noexcept {
+            std::lock_guard<std::mutex> lock(m_xMutex);
+            m_x = xReading;
+        }
+        void setY(float yReading) noexcept {
+            std::lock_guard<std::mutex> lock(m_yMutex);
+            m_y = yReading;
+        }        
+        void setYaw(float yawReading) noexcept {
+            std::lock_guard<std::mutex> lock(m_yawMutex);
+            m_yaw = yawReading;
+        }
 
     protected:
         inline double getFrontDistance() noexcept {
@@ -83,6 +101,18 @@ class Controller {
                 rightVoltageTmp = m_rightVoltage;
             }
             return convertIrVoltageToDistance(rightVoltageTmp);
+        }
+        inline double getX() noexcept {
+            std::lock_guard<std::mutex> lock(m_xMutex);
+            return m_x;
+        }
+        inline double getY() noexcept {
+            std::lock_guard<std::mutex> lock(m_yMutex);
+            return m_y;
+        }
+        inline double getYaw() noexcept {
+            std::lock_guard<std::mutex> lock(m_yawMutex);
+            return m_yaw;
         }
         inline void setPedalPosition(double newPedalPosition) noexcept {
             newPedalPosition = scalePedalPosition(newPedalPosition);
@@ -128,12 +158,18 @@ class Controller {
         float m_rightVoltage;
         double m_groundSteeringAngle;
         double m_pedalPosition;
+        double m_x;
+        double m_y;
+        double m_yaw;
         std::mutex m_frontDistanceMutex;
         std::mutex m_rearDistanceMutex;
         std::mutex m_leftVoltageMutex;
         std::mutex m_rightVoltageMutex;
         std::mutex m_groundSteeringAngleMutex;
         std::mutex m_pedalPositionMutex;
+        std::mutex m_xMutex;
+        std::mutex m_yMutex;
+        std::mutex m_yawMutex;
 };
 
 

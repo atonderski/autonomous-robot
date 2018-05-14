@@ -7,6 +7,7 @@
 #include "controller.hpp"
 #include "manualcontroller.hpp"
 #include "subsumer.hpp"
+#include "pathfinder.hpp"
 
 
 Controller& initializeController(std::map<std::string, std::string> commandlineArguments, double const DT) {
@@ -22,7 +23,9 @@ Controller& initializeController(std::map<std::string, std::string> commandlineA
         double runTime = std::stod(commandlineArguments["time"]);
         bool printSensorValues = commandlineArguments.count("print") != 0;
         return *(new ManualController(DT, pedalMagnitude, steeringMagnitude, runTime, printSensorValues));
-    } else { // else if (commandlineArguments.count("subsumer") != 0) {
+    } else if (commandlineArguments.count("pathfinder") != 0) {
+        return *(new Pathfinder(DT));
+    } else {
         return *(new Subsumer(DT));
     }
 }
@@ -86,10 +89,17 @@ int32_t main(int32_t argc, char **argv) {
             }
         }
     }};
+    auto onFrameReading{[&controller](cluon::data::Envelope &&envelope) {
+        auto frameReading = cluon::extractMessage<opendlv::sim::Frame>(std::move(envelope));
+        controller.setX(frameReading.x());
+        controller.setY(frameReading.y());
+        controller.setYaw(frameReading.yaw());
+    }};
 
     cluon::OD4Session od4{CID};
     od4.dataTrigger(opendlv::proxy::DistanceReading::ID(), onDistanceReading);
     od4.dataTrigger(opendlv::proxy::VoltageReading::ID(), onVoltageReading);
+    od4.dataTrigger(opendlv::sim::Frame::ID(), onFrameReading);
 
     auto atFrequency{[&VERBOSE, &controller, &od4, &measureTimeOfStep, &scalePedalToSimulation]() -> bool {
         
@@ -109,7 +119,7 @@ int32_t main(int32_t argc, char **argv) {
         
         opendlv::proxy::PedalPositionRequest pedalPositionMsg;
         if (scalePedalToSimulation) {
-            pedalPositionMsg.position(4.4f * controller.getPedalPosition());
+            pedalPositionMsg.position(3.0f * controller.getPedalPosition());
         } else {
             pedalPositionMsg.position(controller.getPedalPosition());
         }
