@@ -9,8 +9,8 @@ class AccelerationRegulator {
         , DT{in_DT}
         , TIME_SPLIT(m_conf.confMap.count("TIME_SPLIT") ? m_conf.confMap["TIME_SPLIT"] : 0.6)
         , FORWARD_PEDAL_HIGH(m_conf.confMap.count("FORWARD_PEDAL_HIGH") ? m_conf.confMap["FORWARD_PEDAL_HIGH"] : 0.13)
-        , FORWARD_PEDAL_LOW(m_conf.confMap.count("FORWARD_PEDAL_LOW") ? m_conf.confMap["FORWARD_PEDAL_LOW"] : 0.11)
-        , BACKWARD_PEDAL_HIGH(m_conf.confMap.count("BACKWARD_PEDAL_HIGH") ? m_conf.confMap["BACKWARD_PEDAL_HIGH"] : -0.50)
+        , FORWARD_PEDAL_LOW(m_conf.confMap.count("FORWARD_PEDAL_LOW") ? m_conf.confMap["FORWARD_PEDAL_LOW"] : 0.105)
+        , BACKWARD_PEDAL_HIGH(m_conf.confMap.count("BACKWARD_PEDAL_HIGH") ? m_conf.confMap["BACKWARD_PEDAL_HIGH"] : -0.54)
         , BACKWARD_PEDAL_LOW(m_conf.confMap.count("BACKWARD_PEDAL_LOW") ? m_conf.confMap["BACKWARD_PEDAL_LOW"] : -0.45)
         {
             std::cout   << TIME_SPLIT << " "

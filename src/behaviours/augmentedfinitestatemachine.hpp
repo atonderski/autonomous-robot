@@ -18,33 +18,22 @@ class AugmentedFiniteStateMachine {
             // Parameter space
             , MAX_STEERING_LEFT(m_conf.confMap.count("MAX_STEERING_LEFT") ? m_conf.confMap["MAX_STEERING_LEFT"] : 0.50)
             , MAX_STEERING_RIGHT(m_conf.confMap.count("MAX_STEERING_RIGHT") ? m_conf.confMap["MAX_STEERING_RIGHT"] : -0.50)
-            , SCAN_STEERING_LEFT(m_conf.confMap.count("SCAN_STEERING_LEFT") ? m_conf.confMap["SCAN_STEERING_LEFT"] : 0.25)
-            , SCAN_STEERING_RIGHT(m_conf.confMap.count("SCAN_STEERING_RIGHT") ? m_conf.confMap["SCAN_STEERING_RIGHT"] : -0.25)
+            , SCAN_STEERING_LEFT(m_conf.confMap.count("SCAN_STEERING_LEFT") ? m_conf.confMap["SCAN_STEERING_LEFT"] : 0.05)
+            , SCAN_STEERING_RIGHT(m_conf.confMap.count("SCAN_STEERING_RIGHT") ? m_conf.confMap["SCAN_STEERING_RIGHT"] : -0.05)
             , MOTIVATION_ACT_FRONT(m_conf.confMap.count("MOTIVATION_ACT_FRONT") ? m_conf.confMap["MOTIVATION_ACT_FRONT"] : 0.40)
-            , MOTIVATION_SCAN_SEMIPERIOD(m_conf.confMap.count("MOTIVATION_SCAN_SEMIPERIOD") ? m_conf.confMap["MOTIVATION_SCAN_SEMIPERIOD"] : 0.60)
-            , REFLEX_CRITICAL_FRONT(m_conf.confMap.count("REFLEX_CRITICAL_FRONT") ? m_conf.confMap["REFLEX_CRITICAL_FRONT"] : 0.40)
-            , REFLEX_STOP_FRONT(m_conf.confMap.count("REFLEX_STOP_FRONT") ? m_conf.confMap["REFLEX_STOP_FRONT"] : 0.70)
+            , MOTIVATION_SCAN_SEMIPERIOD(m_conf.confMap.count("MOTIVATION_SCAN_SEMIPERIOD") ? m_conf.confMap["MOTIVATION_SCAN_SEMIPERIOD"] : 0.40)
+            , REFLEX_CRITICAL_FRONT(m_conf.confMap.count("REFLEX_CRITICAL_FRONT") ? m_conf.confMap["REFLEX_CRITICAL_FRONT"] : 0.60)
+            , REFLEX_STOP_FRONT(m_conf.confMap.count("REFLEX_STOP_FRONT") ? m_conf.confMap["REFLEX_STOP_FRONT"] : 0.80)
             , REFLEX_STOP_REAR(m_conf.confMap.count("REFLEX_STOP_REAR") ? m_conf.confMap["REFLEX_STOP_REAR"] : 0.40)
             , REFLEX_STOP_LEFTRIGHT(m_conf.confMap.count("REFLEX_STOP_LEFTRIGHT") ? m_conf.confMap["REFLEX_STOP_LEFTRIGHT"] : 0.30)
-            , AVOID_ACT_FRONT(m_conf.confMap.count("AVOID_ACT_FRONT") ? m_conf.confMap["AVOID_ACT_FRONT"] : 0.90)
+            , REFLEX_STOP_MIN_TIME(m_conf.confMap.count("REFLEX_STOP_MIN_TIME") ? m_conf.confMap["REFLEX_STOP_MIN_TIME"] : 0.7)
+            , AVOID_ACT_FRONT(m_conf.confMap.count("AVOID_ACT_FRONT") ? m_conf.confMap["AVOID_ACT_FRONT"] : 1.10)
             , AVOID_ACT_LEFTRIGHT(m_conf.confMap.count("AVOID_ACT_LEFTRIGHT") ? m_conf.confMap["AVOID_ACT_LEFTRIGHT"] : 0.36)
-            , AVOID_TURNTIME(m_conf.confMap.count("AVOID_TURNTIME") ? m_conf.confMap["AVOID_TURNTIME"] : 0.60)
+            , AVOID_TURNTIME_FRONT(m_conf.confMap.count("AVOID_TURNTIME_FRONT") ? m_conf.confMap["AVOID_TURNTIME_FRONT"] : 1.50)
+            , AVOID_TURNTIME_LEFTRIGHT(m_conf.confMap.count("AVOID_TURNTIME_LEFTRIGHT") ? m_conf.confMap["AVOID_TURNTIME_LEFTRIGHT"] : 0.80)
             // Edge of space
             , activeState{0}
         {
-            std::cout   << MAX_STEERING_LEFT << " "
-                        << MAX_STEERING_RIGHT << " "
-                        << SCAN_STEERING_LEFT << " "
-                        << SCAN_STEERING_RIGHT << " "
-                        << MOTIVATION_ACT_FRONT << " "
-                        << MOTIVATION_SCAN_SEMIPERIOD << " "
-                        << REFLEX_CRITICAL_FRONT << " "
-                        << REFLEX_STOP_FRONT << " "
-                        << REFLEX_STOP_REAR << " "
-                        << REFLEX_STOP_LEFTRIGHT << " "
-                        << AVOID_ACT_FRONT << " "
-                        << AVOID_ACT_LEFTRIGHT << " "
-                        << AVOID_TURNTIME << std::endl;
         }
         virtual ~AugmentedFiniteStateMachine() = default;        
 
@@ -91,9 +80,11 @@ class AugmentedFiniteStateMachine {
         double const REFLEX_STOP_FRONT;
         double const REFLEX_STOP_REAR;
         double const REFLEX_STOP_LEFTRIGHT;
+        double const REFLEX_STOP_MIN_TIME;
         double const AVOID_ACT_FRONT;
         double const AVOID_ACT_LEFTRIGHT;
-        double const AVOID_TURNTIME;
+        double const AVOID_TURNTIME_FRONT;
+        double const AVOID_TURNTIME_LEFTRIGHT;
 
     private:
         AugmentedFiniteStateMachine(AugmentedFiniteStateMachine const &) = delete;
