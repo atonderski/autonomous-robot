@@ -27,7 +27,7 @@ public:
         , m_accelerationRegulator{m_conf, DT}
         , m_behaviourReflex{m_conf, DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
         , m_behaviourAvoid{m_conf, DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
-        , m_behaviourFollowPath{m_pathList, &m_stepX, &m_stepY, &m_stepYaw, m_conf, DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
+        , m_behaviourFollowPath{m_pathMaker.path, &m_stepX, &m_stepY, &m_stepYaw, m_conf, DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
     {
     }
     ~Pathfinder() override = default;
