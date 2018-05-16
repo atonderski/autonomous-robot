@@ -50,32 +50,20 @@ PointList PathMaker::smoothenPath(PointList *gridPointPathList) noexcept {
 }
 
 PointList PathMaker::findPath(PointVector *ptrGridPointsVector, IndexList initialBanlist, int startGridPointIndex, int endGridPointIndex) noexcept {
-    auto banlist = initialBanlist;
-    std::list<PathMaker::PathStruct> pathsList{};
-
-    PathStruct initialPathStruct;
+    PathStruct initialPathStruct{};
     initialPathStruct.pathLength = 0;
     initialPathStruct.path.push_back(startGridPointIndex);
     initialPathStruct.astar = initialPathStruct.pathLength + getManhattanDistance(ptrGridPointsVector, startGridPointIndex, endGridPointIndex);
-    /*
-    std::cout << "Struct: pathLength = " << initialPathStruct.pathLength
-              << ", path 0th elem = " << initialPathStruct.path.front()
-              << ", astar = " << initialPathStruct.astar << std::endl;
-    */
-
+    
+    std::list<PathMaker::PathStruct> pathsList{};
     pathsList.push_front(initialPathStruct);
+    
+    auto banlist = initialBanlist;
     banlist.push_front(startGridPointIndex);
-    /*
-    for (auto ind : banlist) {
-        std::cout << ind << std::endl;
-    }
-    */
     
     PointList gridPointPath{};
     bool foundFinalPath{false};
     while (!foundFinalPath) {
-        //find and EXTRACT struct of lowest astar value. Copy into a separate variable
-        //get index of lowest astar //copy into separate variable
         PathStruct shortestPathStruct{};
         double lowestAstar{1000};
         std::list<PathMaker::PathStruct>::iterator iteratorToShortestPathStruct;
@@ -88,54 +76,26 @@ PointList PathMaker::findPath(PointVector *ptrGridPointsVector, IndexList initia
             itr++;
         }
         shortestPathStruct = *iteratorToShortestPathStruct;
-        //std::cout << "Size before erasure: " << pathsList.size() << std::endl;
         pathsList.erase(iteratorToShortestPathStruct);
-        //std::cout << "Size after erasure: " << pathsList.size() << std::endl;
-        //std::cout << "Current struct is = " << shortestPathStruct.pathLength << ", " << shortestPathStruct.path.front() << ", " << shortestPathStruct.astar << std::endl;
 
-        // Find nearest legit neighbours
         IndexList neighboursList = getNearestNeighbours(&banlist, shortestPathStruct.path.back());
-        /*
-        std::cout << "All the neighbours... " << std::endl;
-        for (auto neighbour : neighboursList) {
-            std::cout << neighbour << std::endl;
-        }
-        */
-
-        // add neighbours to banlist
         for (auto neighbourIndex : neighboursList) {
             banlist.push_front(neighbourIndex);
         }
-        /*
-        for (auto ind : banlist) {
-        std::cout << ind << std::endl;
-        }
-        */
-        
-        // for all neighbours, combine with shortestPathStruct to make new structs
         for (auto neighbourIndex : neighboursList) {
             PathStruct newPathStruct = shortestPathStruct;
             newPathStruct.pathLength += 1;
             newPathStruct.path.push_back(neighbourIndex);
             newPathStruct.astar = newPathStruct.pathLength + getManhattanDistance(ptrGridPointsVector, neighbourIndex, endGridPointIndex);
 
-            // If current new pointIndex == endGridPointIndex then return this path!
             if (neighbourIndex == endGridPointIndex) {
-                // Construct grid path from index path
+                foundFinalPath = true;
+
                 for (auto gridPointIndex : newPathStruct.path) {
                     gridPointPath.push_back((*ptrGridPointsVector)[gridPointIndex]);
                 }
-                foundFinalPath = true;
                 break;
-                /*
-                std::cout << "Here comes the path!" << std::endl;
-                for (auto elem : newPathStruct.path) {
-                    std::cout << elem << std::endl;
-                }
-                */
-            } else { // else push struct to pathsList and keep iterating
-                pathsList.push_front(newPathStruct);
-            }
+            } else { pathsList.push_front(newPathStruct); }
         }
     }
 
@@ -158,6 +118,7 @@ IndexList PathMaker::getNearestNeighbours(IndexList *ptrBanlist, int currentInde
     if ((currentIndex + gridRes) < maxGridIndex) {
         neighboursList.push_back(currentIndex + gridRes);
     }
+
     IndexList::iterator itr = neighboursList.begin();
     while (itr != neighboursList.end()) {
         bool shouldRemove{false};
@@ -178,17 +139,14 @@ IndexList PathMaker::getNearestNeighbours(IndexList *ptrBanlist, int currentInde
 }
 
 double PathMaker::getManhattanDistance(PointVector *ptrGridPointsVector, int firstPointIndex, int secondPointIndex) noexcept {
-    double x1 = (*ptrGridPointsVector)[firstPointIndex].first;
-    double y1 = (*ptrGridPointsVector)[firstPointIndex].second;
-    double x2 = (*ptrGridPointsVector)[secondPointIndex].first;
-    double y2 = (*ptrGridPointsVector)[secondPointIndex].second;
-    return std::abs(x2 - x1) + std::abs(y2 - y1);
+    return std::abs((*ptrGridPointsVector)[secondPointIndex].first - (*ptrGridPointsVector)[firstPointIndex].first)
+         + std::abs((*ptrGridPointsVector)[secondPointIndex].second - (*ptrGridPointsVector)[firstPointIndex].second);
 }
 
 int PathMaker::findNearestGridPointIndex(PointList *ptrGridPoints, Point *ptrPoint) noexcept {
     double shortestDistance{100};
     int nearestGridPointIndex{};
-    int index{0}; // START FROM ZEROETH IN C++ IN CONTRAST TO MATLAB
+    int index{0};
     for (auto gridPoint : *ptrGridPoints) {
         double currentDistance = std::sqrt(std::pow((gridPoint.first - ptrPoint->first), 2) + std::pow((gridPoint.second - ptrPoint->second), 2));
         if (currentDistance < shortestDistance) {
@@ -203,18 +161,13 @@ int PathMaker::findNearestGridPointIndex(PointList *ptrGridPoints, Point *ptrPoi
 
 IndexList PathMaker::makeInitialBanlist(PointList *ptrObstaclePoints, PointList *ptrGridPoints) noexcept {
     IndexList initialBanlist{};
-    int gridIndex = 0; // START FROM ZEROETH IN C++ IN CONTRAST TO MATLAB
+    int gridIndex{0};
     for (auto gridPoint : *ptrGridPoints) {
         if (isTooClose(ptrObstaclePoints, &gridPoint)) {
             initialBanlist.push_back(gridIndex);
         }
         ++gridIndex;
     }
-    /*
-    for (auto ind : initialBanlist) {
-        std::cout << ind << std::endl;
-    }
-    */
 
     return initialBanlist;
 }
