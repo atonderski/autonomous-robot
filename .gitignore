@@ -41,3 +41,5 @@ compile_commands.json
 *.out
 *.app
 
+# Editor workspace
+.vscode
