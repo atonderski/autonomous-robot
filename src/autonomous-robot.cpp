@@ -8,6 +8,7 @@
 #include "manualcontroller.hpp"
 #include "subsumer.hpp"
 #include "pathfinder.hpp"
+#include "cluon-complete-v0.0.74.hpp"
 
 
 Controller& initializeController(std::map<std::string, std::string> commandlineArguments, double const DT) {
@@ -89,21 +90,30 @@ int32_t main(int32_t argc, char **argv) {
             }
         }
     }};
-    auto onFrameReading{[&controller](cluon::data::Envelope &&envelope) {
-        auto frameReading = cluon::extractMessage<opendlv::sim::Frame>(std::move(envelope));
-        controller.setX(frameReading.x());
-        controller.setY(frameReading.y());
-        controller.setYaw(frameReading.yaw());
+    auto onFrame{[&controller](cluon::data::Envelope &&envelope) {
+        auto frame = cluon::extractMessage<opendlv::sim::Frame>(std::move(envelope));
+        controller.xMeasurment(frame.x());
+        controller.yMeasurment(frame.y());
+        controller.yawMeasurment(frame.yaw());
+    }};
+    auto onKinematicState{[&controller](cluon::data::Envelope &&envelope) {
+        auto kinematicState = cluon::extractMessage<opendlv::sim::KinematicState>(std::move(envelope));
+        controller.vxMeasurment(kinematicState.vx());
+        controller.vyMeasurment(kinematicState.vy());
+        controller.yawRateMeasurment(kinematicState.yawRate());
     }};
 
     cluon::OD4Session od4{CID};
     od4.dataTrigger(opendlv::proxy::DistanceReading::ID(), onDistanceReading);
     od4.dataTrigger(opendlv::proxy::VoltageReading::ID(), onVoltageReading);
-    od4.dataTrigger(opendlv::sim::Frame::ID(), onFrameReading);
+    od4.dataTrigger(opendlv::sim::Frame::ID(), onFrame);
+    od4.dataTrigger(opendlv::sim::KinematicState::ID(), onKinematicState);
 
     auto atFrequency{[&VERBOSE, &controller, &od4, &measureTimeOfStep, &scalePedalToSimulation]() -> bool {
         
         bool keepRunning;
+
+        controller.runFilter();
         if (measureTimeOfStep) {
             auto start{std::chrono::steady_clock::now()};
             keepRunning = controller.step();
