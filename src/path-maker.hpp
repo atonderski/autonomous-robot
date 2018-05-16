@@ -10,6 +10,10 @@
 #include <cmath>
 #include "configurationvalues.hpp"
 
+using Point = std::pair<double,double>;
+using PointList = std::list<Point>;
+using PointVector = std::vector<Point>;
+using IndexList = std::list<int>;
 
 class PathMaker {
     public:
@@ -20,48 +24,16 @@ class PathMaker {
         , MARGIN{m_conf.confMap["MARGIN"]}
         , GRID_RESOLUTION{m_conf.confMap["GRID_RESOLUTION"]}
         {
-            //Read map, get list of obstacle POINTS OK!
             auto obstaclePoints = findObstaclePoints();
-
-            //Make Grid based on largest and smallest x/y vals from obstacle list OK!
             auto gridPoints = makeGridPoints(&obstaclePoints);
-            
-            //Calculate points too close to obstacles -> initial banlist
             auto initialBanlist = makeInitialBanlist(&obstaclePoints, &gridPoints);
-            
-            // FindNearestGridPointINDEX for startPoint and endPoint
             auto startGridPointIndex = findNearestGridPointIndex(&gridPoints, &startPoint);
             auto endGridPointIndex = findNearestGridPointIndex(&gridPoints, &endPoint);
 
-            // Ready for dijk's
-            std::vector<std::pair<double,double>> gridPointsVector { std::begin(gridPoints), std::end(gridPoints) };
-
-            /*
-            std::cout << "Testing vecot!" << std::endl;
-            for (auto pair : gridPointsVector) {
-                std::cout << pair.first << ", " << pair.second << std::endl;
-            }
-            */
+            PointVector gridPointsVector { std::begin(gridPoints), std::end(gridPoints) };
 
             auto gridPointPathList = findPath(&gridPointsVector, initialBanlist, startGridPointIndex, endGridPointIndex);
-            /*
-            std::cout << "Here comes the path!" << std::endl;
-            for (auto pair : gridPointPathList) {
-                std::cout << pair.first << ", " << pair.second << std::endl;
-            }
-            */
-
-            // Smoothen that curve!
             auto smoothGridPointPathList = smoothenPath(&gridPointPathList);
-            /*
-            std::cout << "Here comes the smooth list" << std::endl;
-            for (auto smoothGridPoint : smoothGridPointPathList) {
-                std::cout << smoothGridPoint.first << ", " << smoothGridPoint.second << std::endl;
-            }
-            */
-
-            //std::cout << "The start grid index is: " << startGridPointIndex << ", the end grid index is: " << endGridPointIndex << std::endl;
-
             path = smoothGridPointPathList;
         }
 
@@ -70,7 +42,7 @@ class PathMaker {
         struct PathStruct
         {
             int pathLength;
-            std::list<int> path;
+            IndexList path;
             double astar;
 
             PathStruct()
@@ -81,21 +53,21 @@ class PathMaker {
             }
         };
 
-        std::list<std::pair<double,double>> path;
+        PointList path;
 
-        std::list<std::pair<double,double>> smoothenPath(std::list<std::pair<double,double>> *) noexcept;
-        std::list<std::pair<double,double>> findPath(std::vector<std::pair<double,double>> *, std::list<int>, int, int) noexcept;
-        std::list<int> getNearestNeighbours(std::list<int> *, int) noexcept;
-        double getManhattanDistance(std::vector<std::pair<double,double>> *, int, int) noexcept;
-        int findNearestGridPointIndex(std::list<std::pair<double,double>> *, std::pair<double,double> *) noexcept;
-        std::list<int> makeInitialBanlist(std::list<std::pair<double,double>> *, std::list<std::pair<double,double>> *) noexcept;
-        bool isTooClose(std::list<std::pair<double,double>> *, std::pair<double,double> *) noexcept;
-        std::list<std::pair<double,double>> makeGridPoints(std::list<std::pair<double,double>> *) noexcept;
-        std::list<std::pair<double,double>> findObstaclePoints() noexcept;
+        PointList smoothenPath(PointList *) noexcept;
+        PointList findPath(PointVector *, IndexList, int, int) noexcept;
+        IndexList getNearestNeighbours(IndexList *, int) noexcept;
+        double getManhattanDistance(PointVector *, int, int) noexcept;
+        int findNearestGridPointIndex(PointList *, Point *) noexcept;
+        IndexList makeInitialBanlist(PointList *, PointList *) noexcept;
+        bool isTooClose(PointList *, Point *) noexcept;
+        PointList makeGridPoints(PointList *) noexcept;
+        PointList findObstaclePoints() noexcept;
 
     private:
-        std::pair<double,double> startPoint;
-        std::pair<double,double> endPoint;
+        Point startPoint;
+        Point endPoint;
 
         double const MARGIN;
         double const GRID_RESOLUTION;

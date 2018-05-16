@@ -1,11 +1,11 @@
 #include "path-maker.hpp"
 
-std::list<std::pair<double,double>> PathMaker::smoothenPath(std::list<std::pair<double,double>> *gridPointPathList) noexcept {
-    std::list<std::pair<double,double>> smoothPathWidthOne{};
-    std::list<std::pair<double,double>>::iterator itr = gridPointPathList->begin();
+PointList PathMaker::smoothenPath(PointList *gridPointPathList) noexcept {
+    PointList smoothPathWidthOne{};
+    PointList::iterator itr = gridPointPathList->begin();
     smoothPathWidthOne.push_back(*itr);
     std::advance(itr,1);
-    std::list<std::pair<double,double>>::iterator endItr = gridPointPathList->end();
+    PointList::iterator endItr = gridPointPathList->end();
     std::advance(endItr,-1);
     while (itr != endItr) {
         
@@ -21,7 +21,7 @@ std::list<std::pair<double,double>> PathMaker::smoothenPath(std::list<std::pair<
     }
     smoothPathWidthOne.push_back(*itr);
     
-    std::list<std::pair<double,double>> smoothPathWidthTwo{};
+    PointList smoothPathWidthTwo{};
     itr = smoothPathWidthOne.begin();
     smoothPathWidthTwo.push_back(*(itr++));
     smoothPathWidthTwo.push_back(*(itr++));
@@ -49,7 +49,7 @@ std::list<std::pair<double,double>> PathMaker::smoothenPath(std::list<std::pair<
     return smoothPathWidthTwo;
 }
 
-std::list<std::pair<double,double>> PathMaker::findPath(std::vector<std::pair<double,double>> *ptrGridPointsVector, std::list<int> initialBanlist, int startGridPointIndex, int endGridPointIndex) noexcept {
+PointList PathMaker::findPath(PointVector *ptrGridPointsVector, IndexList initialBanlist, int startGridPointIndex, int endGridPointIndex) noexcept {
     auto banlist = initialBanlist;
     std::list<PathMaker::PathStruct> pathsList{};
 
@@ -71,7 +71,7 @@ std::list<std::pair<double,double>> PathMaker::findPath(std::vector<std::pair<do
     }
     */
     
-    std::list<std::pair<double,double>> gridPointPath{};
+    PointList gridPointPath{};
     bool foundFinalPath{false};
     while (!foundFinalPath) {
         //find and EXTRACT struct of lowest astar value. Copy into a separate variable
@@ -94,7 +94,7 @@ std::list<std::pair<double,double>> PathMaker::findPath(std::vector<std::pair<do
         //std::cout << "Current struct is = " << shortestPathStruct.pathLength << ", " << shortestPathStruct.path.front() << ", " << shortestPathStruct.astar << std::endl;
 
         // Find nearest legit neighbours
-        std::list<int> neighboursList = getNearestNeighbours(&banlist, shortestPathStruct.path.back());
+        IndexList neighboursList = getNearestNeighbours(&banlist, shortestPathStruct.path.back());
         /*
         std::cout << "All the neighbours... " << std::endl;
         for (auto neighbour : neighboursList) {
@@ -142,8 +142,8 @@ std::list<std::pair<double,double>> PathMaker::findPath(std::vector<std::pair<do
     return gridPointPath;
 }
 
-std::list<int> PathMaker::getNearestNeighbours(std::list<int> *ptrBanlist, int currentIndex) noexcept {
-    std::list<int> neighboursList{};
+IndexList PathMaker::getNearestNeighbours(IndexList *ptrBanlist, int currentIndex) noexcept {
+    IndexList neighboursList{};
     double maxGridIndex = GRID_RESOLUTION*GRID_RESOLUTION;
     int gridRes = static_cast<int>(GRID_RESOLUTION);
     if ((currentIndex - 1) >= 0) {
@@ -158,7 +158,7 @@ std::list<int> PathMaker::getNearestNeighbours(std::list<int> *ptrBanlist, int c
     if ((currentIndex + gridRes) < maxGridIndex) {
         neighboursList.push_back(currentIndex + gridRes);
     }
-    std::list<int>::iterator itr = neighboursList.begin();
+    IndexList::iterator itr = neighboursList.begin();
     while (itr != neighboursList.end()) {
         bool shouldRemove{false};
         for (auto bannedIndex : *ptrBanlist) {
@@ -177,7 +177,7 @@ std::list<int> PathMaker::getNearestNeighbours(std::list<int> *ptrBanlist, int c
     return neighboursList;
 }
 
-double PathMaker::getManhattanDistance(std::vector<std::pair<double,double>> *ptrGridPointsVector, int firstPointIndex, int secondPointIndex) noexcept {
+double PathMaker::getManhattanDistance(PointVector *ptrGridPointsVector, int firstPointIndex, int secondPointIndex) noexcept {
     double x1 = (*ptrGridPointsVector)[firstPointIndex].first;
     double y1 = (*ptrGridPointsVector)[firstPointIndex].second;
     double x2 = (*ptrGridPointsVector)[secondPointIndex].first;
@@ -185,7 +185,7 @@ double PathMaker::getManhattanDistance(std::vector<std::pair<double,double>> *pt
     return std::abs(x2 - x1) + std::abs(y2 - y1);
 }
 
-int PathMaker::findNearestGridPointIndex(std::list<std::pair<double,double>> *ptrGridPoints, std::pair<double,double> *ptrPoint) noexcept {
+int PathMaker::findNearestGridPointIndex(PointList *ptrGridPoints, Point *ptrPoint) noexcept {
     double shortestDistance{100};
     int nearestGridPointIndex{};
     int index{0}; // START FROM ZEROETH IN C++ IN CONTRAST TO MATLAB
@@ -201,8 +201,8 @@ int PathMaker::findNearestGridPointIndex(std::list<std::pair<double,double>> *pt
     return nearestGridPointIndex;
 }
 
-std::list<int> PathMaker::makeInitialBanlist(std::list<std::pair<double,double>> *ptrObstaclePoints, std::list<std::pair<double,double>> *ptrGridPoints) noexcept {
-    std::list<int> initialBanlist{};
+IndexList PathMaker::makeInitialBanlist(PointList *ptrObstaclePoints, PointList *ptrGridPoints) noexcept {
+    IndexList initialBanlist{};
     int gridIndex = 0; // START FROM ZEROETH IN C++ IN CONTRAST TO MATLAB
     for (auto gridPoint : *ptrGridPoints) {
         if (isTooClose(ptrObstaclePoints, &gridPoint)) {
@@ -219,7 +219,7 @@ std::list<int> PathMaker::makeInitialBanlist(std::list<std::pair<double,double>>
     return initialBanlist;
 }
 
-bool PathMaker::isTooClose(std::list<std::pair<double,double>> *ptrObstaclePoints, std::pair<double,double> *ptrGridPoint) noexcept {
+bool PathMaker::isTooClose(PointList *ptrObstaclePoints, Point *ptrGridPoint) noexcept {
     for (auto obstaclePoint : *ptrObstaclePoints) {
         if (std::sqrt(std::pow((obstaclePoint.first - ptrGridPoint->first), 2) + std::pow((obstaclePoint.second - ptrGridPoint->second), 2)) < MARGIN) {
             return true;
@@ -228,73 +228,47 @@ bool PathMaker::isTooClose(std::list<std::pair<double,double>> *ptrObstaclePoint
     return false;
 }
 
-std::list<std::pair<double,double>> PathMaker::makeGridPoints(std::list<std::pair<double,double>> *ptrObstaclePoints) noexcept {
+PointList PathMaker::makeGridPoints(PointList *ptrObstaclePoints) noexcept {
     double minX{100};
     double maxX{-100};
     double minY{100};
     double maxY{-100};
     for (auto p : *ptrObstaclePoints) {
-        if (p.first < minX) {
-            minX = p.first;
-        }
-        if (p.first > maxX) {
-            maxX = p.first;
-        }
-        if (p.second < minY) {
-            minY = p.second;
-        }
-        if (p.second > maxY) {
-            maxY = p.second;
-        }
+        if (p.first < minX) { minX = p.first; }
+        if (p.first > maxX) { maxX = p.first; }
+        if (p.second < minY) { minY = p.second; }
+        if (p.second > maxY) { maxY = p.second; }
     }
-    //std::cout << minX << ", " << maxX << ", " << minY << ", " << maxY << std::endl;
 
     std::list<double> xRange{};
     std::list<double> yRange{};
-    double diffX = (maxX - minX)/(GRID_RESOLUTION - 1);
-    double diffY = (maxY - minY)/(GRID_RESOLUTION - 1);
+    double const diffX{(maxX - minX)/(GRID_RESOLUTION - 1)};
+    double const diffY{(maxY - minY)/(GRID_RESOLUTION - 1)};
     double X = minX;
+    double Y = minY;
     xRange.push_back(X);
+    yRange.push_back(Y);
     for (int i = 1; i < GRID_RESOLUTION; ++i) {
         X += diffX;
         xRange.push_back(X);
     }
-    double Y = minY;
-    yRange.push_back(Y);
     for (int i = 1; i < GRID_RESOLUTION; ++i) {
         Y += diffY;
         yRange.push_back(Y);
     }
-    /*
-    std::cout << "X RANGE STARTS HERE" << std::endl;
-    for (auto num : xRange) {
-        std::cout << num << std::endl;
-    }
-    std::cout << "Y RANGE STARTS HERE" << std::endl;
-    for (auto num : yRange) {
-        std::cout << num << std::endl;
-    }
-    */
 
-    std::list<std::pair<double,double>> ptrGridPoints{};    
+    PointList ptrGridPoints{};    
     for (auto gridY : yRange) {
         for (auto gridX : xRange) {
             ptrGridPoints.push_back(std::make_pair(gridX, gridY));
         }
     }
-    /*
-    std::cout << "GRID STARTS HERE" << std::endl;
-    for (auto p : ptrGridPoints) {
-        std::cout << p.first << ", " << p.second << std::endl;
-    }
-    */
 
     return ptrGridPoints;
 }
 
-std::list<std::pair<double,double>> PathMaker::findObstaclePoints() noexcept {
-    //Read simulation-map.txt into list of points
-    std::list<std::pair<double,double>> obstaclesList{};
+PointList PathMaker::findObstaclePoints() noexcept {
+    PointList obstaclesList{};
     std::ifstream fileInput("/opt/simulation-map.txt");
     std::string line;
 
@@ -308,7 +282,6 @@ std::list<std::pair<double,double>> PathMaker::findObstaclePoints() noexcept {
         std::getline(isLine, startYString, ',');
         std::getline(isLine, endXString, ',');
         std::getline(isLine, endYString, ';');
-        //std::cout << startXString << startYString << endXString << endYString << std::endl;
 
         double startX = std::stod(startXString);
         double startY = std::stod(startYString);
@@ -332,9 +305,4 @@ std::list<std::pair<double,double>> PathMaker::findObstaclePoints() noexcept {
     }
 
     return obstaclesList;
-    /*
-    for (auto elem : obstaclesList) {
-                std::cout << elem.first << " " << elem.second << std::endl;
-            }
-    */
 }

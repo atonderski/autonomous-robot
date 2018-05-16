@@ -15,7 +15,7 @@ class BehaviourFollowPath : public AugmentedFiniteStateMachine {
             , m_pY{m_stepY}
             , m_pYaw{m_stepYaw}
             , m_path{ std::begin(pathList), std::end(pathList) }
-            , m_previewPointOffset{4}
+            , m_previewPointOffset{0.55}
             , m_finalPathIndex{}
         {
             m_finalPathIndex = m_path.size() - 1;
@@ -25,23 +25,23 @@ class BehaviourFollowPath : public AugmentedFiniteStateMachine {
         void initialState() noexcept override;
         void FollowPathState() noexcept;
 
-        private:
-            double getSteeringSignal() noexcept;
-            std::pair<double,double> getPreviewPoint() noexcept;
-            double distanceToPathpoint(int) noexcept;
-            int signum(double) noexcept;
+    private:
+        double getSteeringSignal() noexcept;
+        std::pair<double,double> getPreviewPoint() noexcept;
+        double distanceToPathpoint(int) noexcept;
+        int signum(double) noexcept;
 
-            BehaviourFollowPath(BehaviourFollowPath const &) = delete;
-            BehaviourFollowPath(BehaviourFollowPath &&) = delete;
-            BehaviourFollowPath &operator=(BehaviourFollowPath const &) = delete;
-            BehaviourFollowPath &operator=(BehaviourFollowPath &&) = delete;
+        BehaviourFollowPath(BehaviourFollowPath const &) = delete;
+        BehaviourFollowPath(BehaviourFollowPath &&) = delete;
+        BehaviourFollowPath &operator=(BehaviourFollowPath const &) = delete;
+        BehaviourFollowPath &operator=(BehaviourFollowPath &&) = delete;
 
-            double const *m_pX;
-            double const *m_pY;
-            double const *m_pYaw;
-            std::vector<std::pair<double,double>> m_path;
-            int m_previewPointOffset;
-            int m_finalPathIndex;
+        double const *m_pX;
+        double const *m_pY;
+        double const *m_pYaw;
+        std::vector<std::pair<double,double>> m_path;
+        double m_previewPointOffset;
+        int m_finalPathIndex;
 
 };
 

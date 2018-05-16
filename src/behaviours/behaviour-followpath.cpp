@@ -3,7 +3,7 @@
 void BehaviourFollowPath::initialState() noexcept {
     m_groundSteeringAngle = 0;
     m_pedalLogic = 0;
-    if (distanceToPathpoint(m_finalPathIndex) > 0.2) {
+    if (distanceToPathpoint(m_finalPathIndex) > 0.1) {
         setState(&BehaviourFollowPath::FollowPathState);
     }
 }
@@ -11,7 +11,7 @@ void BehaviourFollowPath::initialState() noexcept {
 void BehaviourFollowPath::FollowPathState() noexcept {
     m_groundSteeringAngle = getSteeringSignal();
     m_pedalLogic = 1;
-    if (distanceToPathpoint(m_finalPathIndex) < 0.2) {
+    if (distanceToPathpoint(m_finalPathIndex) < 0.1) {
         setState();
     }
 }
@@ -20,21 +20,16 @@ double BehaviourFollowPath::getSteeringSignal() noexcept {
     std::pair<double,double> previewPoint = getPreviewPoint();
 
     //VECTOR ALGEBRA FOR GREAT JUSTICE
-    double Px = previewPoint.first;
-    double Py = previewPoint.second;
-    double Cx = *m_pX;
-    double Cy = *m_pY;
-    double phi = *m_pYaw;
-    double Hx = std::cos(phi);
-    double Hy = std::sin(phi);
-    double Jx = Px - Cx;
-    double Jy = Py - Cy;
+    double Hx = std::cos(*m_pYaw);
+    double Hy = std::sin(*m_pYaw);
+    double Jx = previewPoint.first - *m_pX;
+    double Jy = previewPoint.second - *m_pY;
     double HxJ = Hx*Jy - Hy*Jx;
 
     double magH = std::sqrt( std::pow(Hx, 2) + std::pow(Hy, 2) );
     double magJ = std::sqrt( std::pow(Jx, 2) + std::pow(Jy, 2) );
     double turnSignal = std::asin(HxJ/(magH * magJ));
-    double piHalf = 1.570796;
+    double const piHalf{1.570796};
     if (std::abs(turnSignal) <= piHalf) {
         return turnSignal*(MAX_STEERING_LEFT/piHalf);
     } else if (turnSignal > piHalf) {
@@ -42,8 +37,6 @@ double BehaviourFollowPath::getSteeringSignal() noexcept {
     } else {
         return MAX_STEERING_RIGHT;
     }
-
-    //return signum(HxJ) * 0.30;
 }
 
 std::pair<double,double> BehaviourFollowPath::getPreviewPoint() noexcept {
@@ -59,8 +52,15 @@ std::pair<double,double> BehaviourFollowPath::getPreviewPoint() noexcept {
         }
     }
     
-    int previewPoint = currentClosestPathpoint + m_previewPointOffset;
-    //std::cout << "Current preview point = " << previewPoint << std::endl;
+    int previewPoint{currentClosestPathpoint};
+    double pathSegmentLengthToPreviewPoint{0.0};
+    while (pathSegmentLengthToPreviewPoint < m_previewPointOffset) {
+        ++previewPoint;
+        double xSegment = m_path[previewPoint].first - m_path[previewPoint - 1].first;
+        double ySegment = m_path[previewPoint].second - m_path[previewPoint - 1].second;
+        pathSegmentLengthToPreviewPoint += std::sqrt( std::pow(xSegment, 2) + std::pow(ySegment, 2) );
+    }
+
     if (previewPoint > m_finalPathIndex) {
         return m_path[m_finalPathIndex];
     } else {

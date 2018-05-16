@@ -2,8 +2,6 @@
 #define AUTONOMOUS_ROBOT_SUBSUMER
 
 #include "controller.hpp"
-#include <limits>
-#include <iostream>
 #include "configurationvalues.hpp"
 #include "accelerationregulator.hpp"
 #include "behaviours/behaviour-reflex.hpp"
