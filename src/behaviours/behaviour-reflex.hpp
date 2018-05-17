@@ -12,6 +12,7 @@ class BehaviourReflex : public AugmentedFiniteStateMachine {
         }
         ~BehaviourReflex() override = default;
 
+        void universalState() noexcept override;
         void initialState() noexcept override;
         void stateMoveBack() noexcept;
 

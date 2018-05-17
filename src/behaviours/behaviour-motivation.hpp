@@ -12,6 +12,7 @@ class BehaviourMotivation : public AugmentedFiniteStateMachine {
         }
         ~BehaviourMotivation() override = default;
 
+        void universalState() noexcept override;
         void initialState() noexcept override;
         void stateMotivated() noexcept;
         void stateScan() noexcept;

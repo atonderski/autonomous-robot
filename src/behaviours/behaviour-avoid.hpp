@@ -1,6 +1,9 @@
 #ifndef BEHAVIOUR_AVOID
 #define BEHAVIOUR_AVOID
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include "augmentedfinitestatemachine.hpp"
 
 class BehaviourAvoid : public AugmentedFiniteStateMachine {
@@ -10,11 +13,13 @@ class BehaviourAvoid : public AugmentedFiniteStateMachine {
             , previousTurnRight{}
             , m_countdown{}
             , m_randomizerCountdown{-1.0}
-            , PREVIOUS_TURN_MEMORY{25.0}
+            , PREVIOUS_TURN_MEMORY{20.0}
         {
+            srand(time(NULL));
         }
         ~BehaviourAvoid() override = default;
 
+        void universalState() noexcept override;
         void initialState() noexcept override;
         void stateFrontTurnLeft() noexcept;
         void stateFrontTurnRight() noexcept;

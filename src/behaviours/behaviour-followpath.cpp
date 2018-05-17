@@ -1,21 +1,25 @@
 #include "behaviour-followpath.hpp"
 
+void BehaviourFollowPath::universalState() noexcept {
+    if (m_countdown >= 0) { m_countdown -= m_dt; }
+    if (distanceToPathpoint(m_finalPathIndex) < m_stopRadius) { --finishCounter; }
+}
+
 void BehaviourFollowPath::initialState() noexcept {
     m_groundSteeringAngle = 0;
     m_pedalLogic = 0;
-    if (distanceToPathpoint(m_finalPathIndex) > m_stopRadius) {
-        if (m_counter > 0) {
-            m_counter -= m_dt;
-        } else {
-            setState(&BehaviourFollowPath::FollowPathState);
+    if (distanceToPathpoint(m_finalPathIndex) > m_stopRadius && notFinished) {
+        if (m_countdown < 0) {
+            setState(&BehaviourFollowPath::followPathState);
         }
     }
 }
 
-void BehaviourFollowPath::FollowPathState() noexcept {
+void BehaviourFollowPath::followPathState() noexcept {
     m_groundSteeringAngle = getSteeringSignal();
     m_pedalLogic = 1;
-    if (distanceToPathpoint(m_finalPathIndex) < m_stopRadius) {
+    if (finishCounter < 0) {
+        notFinished = false;
         setState();
     }
 }

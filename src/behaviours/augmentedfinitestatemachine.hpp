@@ -45,6 +45,7 @@ class AugmentedFiniteStateMachine {
         }
         
         void update() noexcept {
+            universalState();
             if (activeState != 0) {
                 (this->*activeState)();
             } else {
@@ -56,6 +57,7 @@ class AugmentedFiniteStateMachine {
             return activeState != 0;
         }
 
+        virtual void universalState() noexcept = 0;
         virtual void initialState() noexcept = 0;
 
         double m_groundSteeringAngle;

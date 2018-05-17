@@ -17,15 +17,18 @@ class BehaviourFollowPath : public AugmentedFiniteStateMachine {
             , m_path{ std::begin(pathList), std::end(pathList) }
             , m_previewPointOffset{0.55}
             , m_finalPathIndex{}
-            , m_stopRadius{0.3}
-            , m_counter{10}
+            , m_stopRadius{0.2}
+            , m_countdown{10}
+            , notFinished{true}
+            , finishCounter{5}
         {
             m_finalPathIndex = m_path.size() - 1;
         }
         ~BehaviourFollowPath() override = default;
 
+        void universalState() noexcept override;
         void initialState() noexcept override;
-        void FollowPathState() noexcept;
+        void followPathState() noexcept;
 
     private:
         double getSteeringSignal() noexcept;
@@ -45,7 +48,9 @@ class BehaviourFollowPath : public AugmentedFiniteStateMachine {
         double m_previewPointOffset;
         int m_finalPathIndex;
         double m_stopRadius;
-        double m_counter;
+        double m_countdown;
+        bool notFinished;
+        int finishCounter;
 
 };
 

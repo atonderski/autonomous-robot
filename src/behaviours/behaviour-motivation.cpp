@@ -1,5 +1,9 @@
 #include "behaviour-motivation.hpp"
 
+void BehaviourMotivation::universalState() noexcept {
+    if (m_countdown >= 0) { m_countdown -= m_dt; }
+}
+
 void BehaviourMotivation::initialState() noexcept {
     if (*m_pFrontDistance > MOTIVATION_ACT_FRONT) {
         //setState(&BehaviourMotivation::stateMotivated);
@@ -25,9 +29,7 @@ void BehaviourMotivation::stateScan() noexcept {
             m_pedalLogic = 1;
         }
         m_countdown = MOTIVATION_SCAN_SEMIPERIOD;
-    } else {
-        m_countdown -= m_dt;
-    }
+    } 
     
     if (*m_pFrontDistance < MOTIVATION_ACT_FRONT) {
         setState();
