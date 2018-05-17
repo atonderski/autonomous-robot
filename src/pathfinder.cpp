@@ -1,14 +1,16 @@
 
 #include "pathfinder.hpp"
 
+
 bool Pathfinder::step() noexcept {
+
+    runFilter();
+
     m_stepFront = getFrontDistance();
     m_stepRear = getRearDistance();
     m_stepLeft = getLeftDistance();
     m_stepRight = getRightDistance();
 
-    // m_distribution(m_generator);
-    
     m_stepX = getX();
     m_stepY = getY();
     m_stepYaw = getYaw();
@@ -31,8 +33,32 @@ bool Pathfinder::step() noexcept {
         setGroundSteeringAngle(0);
         pedalLogic = 0;
     }
-    
+
     m_accelerationRegulator.setPedalLogic(pedalLogic);
     setPedalPositionUnscaled(m_accelerationRegulator.getPedalPosition());
     return true;
+}
+
+
+void Pathfinder::runFilter() noexcept {
+
+    auto measurements = getMeasurements();
+    auto m_absoluteMeasurements = Eigen::VectorXd(measurements);
+
+    // Fix relative velocities
+    double yaw = getYaw();
+    m_absoluteMeasurements(3) = measurements(3) * std::cos(yaw) - measurements(4) * std::sin(yaw);
+    m_absoluteMeasurements(4) = measurements(3) * std::sin(yaw) + measurements(4) * std::cos(yaw);
+
+    // Add noise
+    for (int i = 0; i<6; i++) {
+        m_absoluteMeasurements(i) += m_distribution(m_generator);
+    }
+
+    m_filter.update(m_absoluteMeasurements);
+    auto state = m_filter.state();
+    std::cout << "x: " << state(0) << " ;  y: " << state(1) << std::endl;
+    setX(state(0));
+    setY(state(1));
+    setYaw(state(2));
 }

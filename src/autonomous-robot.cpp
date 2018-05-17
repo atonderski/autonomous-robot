@@ -113,7 +113,6 @@ int32_t main(int32_t argc, char **argv) {
         
         bool keepRunning;
 
-        controller.runFilter();
         if (measureTimeOfStep) {
             auto start{std::chrono::steady_clock::now()};
             keepRunning = controller.step();

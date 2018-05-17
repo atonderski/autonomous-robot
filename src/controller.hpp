@@ -25,52 +25,15 @@ public:
     , m_x{}
     , m_y{}
     , m_yaw{}
-    , m_measurments{}
-    , m_filter{}
+    , m_measurements{6}
     , m_frontDistanceMutex{}
     , m_rearDistanceMutex{}
     , m_leftVoltageMutex{}
     , m_rightVoltageMutex{}
     , m_groundSteeringAngleMutex{}
     , m_pedalPositionMutex{}
-    , m_measurmentsMutex{}
+    , m_measurementsMutex{}
     {
-        int n = 6; // Number of states
-        int m = 6; // Number of measurements
-
-        m_measurments = Eigen::VectorXd(m); // measurement vector
-
-        Eigen::MatrixXd A(n, n); // System dynamics matrix
-        Eigen::MatrixXd C(m, n); // Output matrix
-        Eigen::MatrixXd Q(n, n); // Process noise covariance
-        Eigen::MatrixXd R(m, m); // Measurement noise covariance
-        Eigen::MatrixXd P(n, n); // Estimate error covariance
-
-        // Discrete LTI projectile motion, measuring position only
-        A <<    1, 0, 0, DT, 0, 0,
-                0, 1, 0, 0, DT, 0,
-                0, 0, 1, 0, 0, DT,
-                0, 0, 0, 1, 0, 0,
-                0, 0, 0, 0, 1, 0,
-                0, 0, 0, 0, 0, 1;
-
-        // Output matrix is diagonal since we measure all quantities directly
-        C = Eigen::MatrixXd::Identity(m,n);
-
-        // Assume diagonal noise matrices
-        Q = Eigen::MatrixXd::Identity(n,n) * .05;
-        R = Eigen::MatrixXd::Identity(m,m) * 2;
-        P = Eigen::MatrixXd::Identity(n,n) * 2;
-
-        std::cout << "A: \n" << A << std::endl;
-        std::cout << "C: \n" << C << std::endl;
-        std::cout << "Q: \n" << Q << std::endl;
-        std::cout << "R: \n" << R << std::endl;
-        std::cout << "P: \n" << P << std::endl;
-
-        // Construct and init the filter
-        m_filter = KalmanFilter(DT, A, C, Q, R, P);
-        m_filter.init();
     }
 
     virtual ~Controller() = default;
@@ -108,42 +71,33 @@ public:
     }
 
     void xMeasurment(float xReading) noexcept {
-        std::lock_guard<std::mutex> lock(m_measurmentsMutex);
-        m_measurments(0) = xReading;
+        std::lock_guard<std::mutex> lock(m_measurementsMutex);
+        m_measurements(0) = xReading;
     }
 
     void yMeasurment(float yReading) noexcept {
-        std::lock_guard<std::mutex> lock(m_measurmentsMutex);
-        m_measurments(1) = yReading;
+        std::lock_guard<std::mutex> lock(m_measurementsMutex);
+        m_measurements(1) = yReading;
     }
 
     void yawMeasurment(float yawReading) noexcept {
-        std::lock_guard<std::mutex> lock(m_measurmentsMutex);
-        m_measurments(2) = yawReading;
+        std::lock_guard<std::mutex> lock(m_measurementsMutex);
+        m_measurements(2) = yawReading;
     }
 
     void vxMeasurment(float vxReading) noexcept {
-        std::lock_guard<std::mutex> lock(m_measurmentsMutex);
-        m_measurments(3) = vxReading;
+        std::lock_guard<std::mutex> lock(m_measurementsMutex);
+        m_measurements(3) = vxReading;
     }
 
     void vyMeasurment(float vyReading) noexcept {
-        std::lock_guard<std::mutex> lock(m_measurmentsMutex);
-        m_measurments(4) = vyReading;
+        std::lock_guard<std::mutex> lock(m_measurementsMutex);
+        m_measurements(4) = vyReading;
     }
 
     void yawRateMeasurment(float yawRateReading) noexcept {
-        std::lock_guard<std::mutex> lock(m_measurmentsMutex);
-        m_measurments(5) = yawRateReading;
-    }
-
-    void runFilter() noexcept {
-        std::lock_guard<std::mutex> lock(m_measurmentsMutex);
-        m_filter.update(m_measurments);
-        auto state = m_filter.state();
-        m_x = state(0);
-        m_y = state(1);
-        m_yaw = state(2);
+        std::lock_guard<std::mutex> lock(m_measurementsMutex);
+        m_measurements(5) = yawRateReading;
     }
 
 protected:
@@ -185,6 +139,23 @@ protected:
 
     inline double getYaw() noexcept {
         return m_yaw;
+    }
+
+    inline void setX(double x) noexcept {
+        m_x = x;
+    }
+
+    inline void setY(double y) noexcept {
+        m_y = y;
+    }
+
+    inline void setYaw(double yaw) noexcept {
+        m_yaw = yaw;
+    }
+
+    inline Eigen::VectorXd getMeasurements() noexcept {
+        std::lock_guard<std::mutex> lock(m_measurementsMutex);
+        return m_measurements;
     }
 
     inline void setPedalPosition(double newPedalPosition) noexcept {
@@ -237,15 +208,14 @@ private:
     double m_x;
     double m_y;
     double m_yaw;
-    Eigen::VectorXd m_measurments;
-    KalmanFilter m_filter;
+    Eigen::VectorXd m_measurements;
     std::mutex m_frontDistanceMutex;
     std::mutex m_rearDistanceMutex;
     std::mutex m_leftVoltageMutex;
     std::mutex m_rightVoltageMutex;
     std::mutex m_groundSteeringAngleMutex;
     std::mutex m_pedalPositionMutex;
-    std::mutex m_measurmentsMutex;
+    std::mutex m_measurementsMutex;
 };
 
 
