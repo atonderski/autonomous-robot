@@ -2,20 +2,23 @@
 
 void BehaviourAvoid::initialState() noexcept {
     if (*m_pLeftDistance < AVOID_ACT_LEFTRIGHT) {
-        //m_countdown = AVOID_TURNTIME_LEFTRIGHT;
         setState(&BehaviourAvoid::stateSideTurnRight);
     } else if (*m_pRightDistance < AVOID_ACT_LEFTRIGHT) {
-        //m_countdown = AVOID_TURNTIME_LEFTRIGHT;
         setState(&BehaviourAvoid::stateSideTurnLeft);
     } else if (*m_pFrontDistance < AVOID_ACT_FRONT) {
-        //m_countdown = AVOID_TURNTIME_FRONT;
+
+        if (m_randomizerCountdown < 0) {
+            if (std::rand() < 0.5) { previousTurnRight = false; }
+            else { previousTurnRight = true; }
+            m_randomizerCountdown = PREVIOUS_TURN_MEMORY;
+        } else { m_randomizerCountdown -= m_dt; }
+
         if (previousTurnRight) { setState(&BehaviourAvoid::stateFrontTurnRight); }
         else { setState(&BehaviourAvoid::stateFrontTurnLeft); }
     }
 }
 
 void BehaviourAvoid::stateFrontTurnLeft() noexcept {
-    previousTurnRight = false;
     if ((*m_pFrontDistance > AVOID_ACT_FRONT) && (m_countdown < 0)) {
         setState();
     } else {
@@ -27,7 +30,6 @@ void BehaviourAvoid::stateFrontTurnLeft() noexcept {
 }
 
 void BehaviourAvoid::stateFrontTurnRight() noexcept {
-    previousTurnRight = true;
     if ((*m_pFrontDistance > AVOID_ACT_FRONT) && (m_countdown < 0)) {
         setState();
     } else {

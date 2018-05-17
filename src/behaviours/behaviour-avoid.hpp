@@ -9,6 +9,8 @@ class BehaviourAvoid : public AugmentedFiniteStateMachine {
             : AugmentedFiniteStateMachine(m_conf, DT, stepFront, stepRear, stepLeft, stepRight)
             , previousTurnRight{}
             , m_countdown{}
+            , m_randomizerCountdown{-1.0}
+            , PREVIOUS_TURN_MEMORY{25.0}
         {
         }
         ~BehaviourAvoid() override = default;
@@ -22,6 +24,8 @@ class BehaviourAvoid : public AugmentedFiniteStateMachine {
     private:
         bool previousTurnRight;
         double m_countdown;
+        double m_randomizerCountdown;
+        double const PREVIOUS_TURN_MEMORY;
 
 };
 
