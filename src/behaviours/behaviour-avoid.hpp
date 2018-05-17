@@ -9,19 +9,19 @@ class BehaviourAvoid : public AugmentedFiniteStateMachine {
             : AugmentedFiniteStateMachine(m_conf, DT, stepFront, stepRear, stepLeft, stepRight)
             , previousTurnRight{}
             , m_countdown{}
-            , avoidingFront{}
         {
         }
         ~BehaviourAvoid() override = default;
 
         void initialState() noexcept override;
-        void stateTurnLeft() noexcept;
-        void stateTurnRight() noexcept;
+        void stateFrontTurnLeft() noexcept;
+        void stateFrontTurnRight() noexcept;
+        void stateSideTurnLeft() noexcept;
+        void stateSideTurnRight() noexcept;
 
     private:
         bool previousTurnRight;
         double m_countdown;
-        bool avoidingFront;
 
 };
 
