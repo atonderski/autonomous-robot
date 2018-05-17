@@ -54,6 +54,7 @@ void Pathfinder::runFilter() noexcept {
     for (int i = 0; i<6; i++) {
         m_absoluteMeasurements(i) += m_distribution(m_generator);
     }
+    std::cout << "noise: " << m_distribution(m_generator) << std::endl;
 
     m_filter.update(m_absoluteMeasurements);
     auto state = m_filter.state();

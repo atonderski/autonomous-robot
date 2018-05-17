@@ -3,15 +3,19 @@
 void BehaviourFollowPath::initialState() noexcept {
     m_groundSteeringAngle = 0;
     m_pedalLogic = 0;
-    if (distanceToPathpoint(m_finalPathIndex) > 0.1) {
-        setState(&BehaviourFollowPath::FollowPathState);
+    if (distanceToPathpoint(m_finalPathIndex) > m_stopRadius) {
+        if (m_counter > 0) {
+            m_counter -= m_dt;
+        } else {
+            setState(&BehaviourFollowPath::FollowPathState);
+        }
     }
 }
 
 void BehaviourFollowPath::FollowPathState() noexcept {
     m_groundSteeringAngle = getSteeringSignal();
     m_pedalLogic = 1;
-    if (distanceToPathpoint(m_finalPathIndex) < 0.1) {
+    if (distanceToPathpoint(m_finalPathIndex) < m_stopRadius) {
         setState();
     }
 }

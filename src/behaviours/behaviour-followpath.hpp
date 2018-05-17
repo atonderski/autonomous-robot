@@ -17,6 +17,8 @@ class BehaviourFollowPath : public AugmentedFiniteStateMachine {
             , m_path{ std::begin(pathList), std::end(pathList) }
             , m_previewPointOffset{0.55}
             , m_finalPathIndex{}
+            , m_stopRadius{0.3}
+            , m_counter{10}
         {
             m_finalPathIndex = m_path.size() - 1;
         }
@@ -42,6 +44,8 @@ class BehaviourFollowPath : public AugmentedFiniteStateMachine {
         std::vector<std::pair<double,double>> m_path;
         double m_previewPointOffset;
         int m_finalPathIndex;
+        double m_stopRadius;
+        double m_counter;
 
 };
 

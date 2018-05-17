@@ -23,6 +23,7 @@ public:
         , m_stepX{}
         , m_stepY{}
         , m_stepYaw{}
+        , m_sensorNoiseStd{0.5}
         , m_filter{}
         , m_conf{"/opt/pathfinder.conf"}
         , m_pathMaker{m_conf}
@@ -31,7 +32,7 @@ public:
         , m_behaviourAvoid{m_conf, DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
         , m_behaviourFollowPath{m_pathMaker.path, &m_stepX, &m_stepY, &m_stepYaw, m_conf, DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
         , m_generator{}
-        , m_distribution{0, 1.0}
+        , m_distribution{0, m_sensorNoiseStd}
     {
         int n = 6; // Number of states
         int m = 6; // Number of measurements
@@ -55,7 +56,7 @@ public:
 
         // Assume diagonal noise matrices
         Q = Eigen::MatrixXd::Identity(n,n) * .05;
-        R = Eigen::MatrixXd::Identity(m,m) * 1;
+        R = Eigen::MatrixXd::Identity(m,m) * m_sensorNoiseStd * m_sensorNoiseStd;
 
         P = Eigen::MatrixXd::Identity(n,n) * 1;
 
@@ -85,6 +86,7 @@ private:
     double m_stepX;
     double m_stepY;
     double m_stepYaw;
+    double m_sensorNoiseStd;
     KalmanFilter m_filter;
 
     ConfigurationValues m_conf;

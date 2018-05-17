@@ -4,7 +4,7 @@ amd64:
 
 
 run: amd64
-	docker-compose up
+	docker-compose up --force-recreate
 
 
 publish:
