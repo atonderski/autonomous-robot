@@ -27,7 +27,7 @@ class AugmentedFiniteStateMachine {
             , REFLEX_STOP_MIN_TIME(m_conf.confMap.count("REFLEX_STOP_MIN_TIME") ? m_conf.confMap["REFLEX_STOP_MIN_TIME"] : 0.7)
             , AVOID_ACT_FRONT(m_conf.confMap.count("AVOID_ACT_FRONT") ? m_conf.confMap["AVOID_ACT_FRONT"] : 1.10)
             , AVOID_ACT_LEFTRIGHT(m_conf.confMap.count("AVOID_ACT_LEFTRIGHT") ? m_conf.confMap["AVOID_ACT_LEFTRIGHT"] : 0.36)
-            , AVOID_TURNTIME_FRONT(m_conf.confMap.count("AVOID_TURNTIME_FRONT") ? m_conf.confMap["AVOID_TURNTIME_FRONT"] : 2.2)
+            , AVOID_TURNTIME_FRONT(m_conf.confMap.count("AVOID_TURNTIME_FRONT") ? m_conf.confMap["AVOID_TURNTIME_FRONT"] : 1.8)
             , AVOID_TURNTIME_LEFTRIGHT(m_conf.confMap.count("AVOID_TURNTIME_LEFTRIGHT") ? m_conf.confMap["AVOID_TURNTIME_LEFTRIGHT"] : 1.20)
             // Edge of space
             , activeState{0}
