@@ -6,24 +6,13 @@ bool Pathfinder::step() noexcept {
     m_stepRear = getRearDistance();
     m_stepLeft = getLeftDistance();
     m_stepRight = getRightDistance();
+
+    // m_distribution(m_generator);
+    
     m_stepX = getX();
     m_stepY = getY();
     m_stepYaw = getYaw();
 
-    /*
-    Noise to be added here. Example:
-    m_stepFront += generateNoiseValue(sigma);
-    m_stepRear += generateNoiseValue(sigma);
-    etc.
-    in this example generateNoiseValue would pick a random value a zero-mean
-    normal distribution defined by one value, standard deviate sigma.
-    */
-
-    /*
-    Kalman filter goes here.
-    Results of filter should overwrite the original member variables above.
-    */
-    
     m_behaviourReflex.update();
     m_behaviourAvoid.update();
     m_behaviourFollowPath.update();

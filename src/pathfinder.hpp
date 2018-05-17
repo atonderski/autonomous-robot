@@ -1,6 +1,7 @@
 #ifndef AUTONOMOUS_ROBOT_PATHFINDER
 #define AUTONOMOUS_ROBOT_PATHFINDER
 
+#include <random>
 #include "controller.hpp"
 #include "configurationvalues.hpp"
 #include "path-maker.hpp"
@@ -26,6 +27,8 @@ public:
         , m_behaviourReflex{m_conf, DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
         , m_behaviourAvoid{m_conf, DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
         , m_behaviourFollowPath{m_pathMaker.path, &m_stepX, &m_stepY, &m_stepYaw, m_conf, DT, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
+        , m_generator{}
+        , m_distribution{0, 1.0}
     {
     }
     ~Pathfinder() override = default;
@@ -48,6 +51,9 @@ private:
     BehaviourReflex m_behaviourReflex;
     BehaviourAvoid m_behaviourAvoid;
     BehaviourFollowPath m_behaviourFollowPath;
+
+    std::default_random_engine m_generator;
+    std::normal_distribution<double> m_distribution;
 
 };
 
