@@ -63,7 +63,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 ################################################################################
 # Gather all object code first to avoid double compilation.
-add_library(${PROJECT_NAME}-core OBJECT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp src/manualcontroller.cpp src/subsumer.cpp src/pathfinder.cpp src/path-maker.cpp src/behaviours/behaviour-reflex.cpp src/behaviours/behaviour-motivation.cpp src/behaviours/behaviour-avoid.cpp src/behaviours/behaviour-followpath.cpp thirdparty/kalman.cpp)
+add_library(${PROJECT_NAME}-core OBJECT ${CMAKE_BINARY_DIR}/opendlv-standard-message-set.cpp src/manualcontroller.cpp src/subsumer.cpp src/pathfinder.cpp src/path-maker.cpp src/stalker.cpp src/behaviours/behaviour-reflex.cpp src/behaviours/behaviour-motivation.cpp src/behaviours/behaviour-avoid.cpp src/behaviours/behaviour-followpath.cpp src/behaviours/behaviour-follow-robot.cpp thirdparty/kalman.cpp)
 
 ################################################################################
 # Create executable.

@@ -26,7 +26,6 @@ public:
     }
     ~Subsumer() override = default;
 
-public:
     bool step() noexcept override;
 
 private:

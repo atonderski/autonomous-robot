@@ -8,6 +8,7 @@
 #include "manualcontroller.hpp"
 #include "subsumer.hpp"
 #include "pathfinder.hpp"
+#include "stalker.hpp"
 #include "cluon-complete-v0.0.74.hpp"
 
 
@@ -26,6 +27,8 @@ Controller& initializeController(std::map<std::string, std::string> commandlineA
         return *(new ManualController(DT, pedalMagnitude, steeringMagnitude, runTime, printSensorValues));
     } else if (commandlineArguments.count("pathfinder") != 0) {
         return *(new Pathfinder(DT));
+    } else if (commandlineArguments.count("stalker") != 0) {
+        return *(new Stalker(DT));
     } else {
         return *(new Subsumer(DT));
     }
