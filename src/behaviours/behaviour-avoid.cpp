@@ -24,7 +24,6 @@ void BehaviourAvoid::initialState() noexcept {
 }
 
 void BehaviourAvoid::stateFrontTurnLeft() noexcept {
-    if (*m_pLeftDistance < AVOID_ACT_LEFTRIGHT) { setState(&BehaviourAvoid::stateSideTurnRight); }
     if ((*m_pFrontDistance > AVOID_ACT_FRONT) && (m_countdown < 0)) {
         setState();
     } else {
@@ -35,7 +34,6 @@ void BehaviourAvoid::stateFrontTurnLeft() noexcept {
 }
 
 void BehaviourAvoid::stateFrontTurnRight() noexcept {
-    if (*m_pRightDistance < AVOID_ACT_LEFTRIGHT) { setState(&BehaviourAvoid::stateSideTurnLeft); }
     if ((*m_pFrontDistance > AVOID_ACT_FRONT) && (m_countdown < 0)) {
         setState();
     } else {
@@ -46,7 +44,6 @@ void BehaviourAvoid::stateFrontTurnRight() noexcept {
 }
 
 void BehaviourAvoid::stateSideTurnLeft() noexcept {
-    if (*m_pLeftDistance < AVOID_ACT_LEFTRIGHT) { setState(&BehaviourAvoid::stateSideTurnRight); }
     previousTurnRight = false;
     if ((*m_pRightDistance > AVOID_ACT_LEFTRIGHT) && (m_countdown < 0)) {
         setState();
@@ -58,7 +55,6 @@ void BehaviourAvoid::stateSideTurnLeft() noexcept {
 }
 
 void BehaviourAvoid::stateSideTurnRight() noexcept{
-    if (*m_pRightDistance < AVOID_ACT_LEFTRIGHT) { setState(&BehaviourAvoid::stateSideTurnLeft); }
     previousTurnRight = true;
     if ((*m_pLeftDistance > AVOID_ACT_LEFTRIGHT) && (m_countdown < 0)) {
         setState();

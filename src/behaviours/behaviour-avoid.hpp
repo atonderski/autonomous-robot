@@ -13,7 +13,7 @@ class BehaviourAvoid : public AugmentedFiniteStateMachine {
             , previousTurnRight{}
             , m_countdown{}
             , m_randomizerCountdown{-1.0}
-            , PREVIOUS_TURN_MEMORY{20.0}
+            , PREVIOUS_TURN_MEMORY{8.0}
         {
             srand(time(NULL));
         }

@@ -7,7 +7,7 @@ services:
 
     sim-global:
         image: chalmersrevere/opendlv-sim-global-amd64:v0.0.5
-        command: "/usr/bin/opendlv-sim-global --cid=111 --freq=30 --frame-id=0 --x=-2.0 --y=-2.0 --yaw=0 "
+        command: "/usr/bin/opendlv-sim-global --cid=111 --freq=30 --frame-id=0 --x=-3.0 --y=-3.0 --yaw=0 "
 
     sim-motor-kiwi:
         image: chalmersrevere/opendlv-sim-motor-kiwi-amd64:v0.0.4
