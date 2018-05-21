@@ -2,6 +2,7 @@
 #define BEHAVIOUR_FOLLOW_ROBOT
 
 #include "augmentedfinitestatemachine.hpp"
+#include <cmath>
 
 class BehaviourFollowRobot : public AugmentedFiniteStateMachine {
 public:
@@ -9,7 +10,10 @@ public:
         : AugmentedFiniteStateMachine(m_conf, DT, stepFront, stepRear, stepLeft, stepRight)
         , m_pDetectionAngle{stepDetectionAngle}
         , m_pDetectionDistance{stepDetectionDistance}
-        , targetVisible{false}
+        , targetVisible{true}
+        , MARGIN(m_conf.confMap.count("MARGIN") ? m_conf.confMap["MARGIN"] : 0.2) // If no value found in config file use default 0.2
+        , PREFERRED_DISTANCE(m_conf.confMap.count("PREFERRED_DISTANCE") ? m_conf.confMap["PREFERRED_DISTANCE"] : 0.5)
+        , SMOOTH_STEERING_THRESHOLD(m_conf.confMap.count("SMOOTH_STEERING_THRESHOLD") ? m_conf.confMap["SMOOTH_STEERING_THRESHOLD"] : 0.5236) // pi/6
     {
 
     }
@@ -17,14 +21,17 @@ public:
 
     void universalState() noexcept override;
     void initialState() noexcept override;
-    void atTargetPositionState() noexcept;
-    void followTurnLeft() noexcept;
-    void followTurnRight() noexcept;
+    void atAlignedPositionState() noexcept;
+    void followForward() noexcept;
+    void followBackward() noexcept;
 
 private:
     double const *m_pDetectionAngle;
     double const *m_pDetectionDistance;
     bool targetVisible;
+    double const MARGIN;
+    double const PREFERRED_DISTANCE;
+    double const SMOOTH_STEERING_THRESHOLD;
 
     BehaviourFollowRobot(BehaviourFollowRobot const &) = delete;
     BehaviourFollowRobot &operator=(BehaviourFollowRobot const &) = delete;
