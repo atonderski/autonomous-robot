@@ -2,7 +2,7 @@ version: '2'
 
 services:
     autonomous-robot:
-        image: autonomous-robot:armhf
+        image: atonderski/autonomous-robot:armhf
         depends_on:
           - detector
         command: "--cid=112 --freq=10 --stalker"
@@ -19,7 +19,7 @@ services:
         command: "/usr/bin/opendlv-device-camera-rpicamv2 --cid=112"
     
     detector:
-        image: detector:armhf
+        image: atonderski/detector:armhf
         depends_on:
           - device-camera-rpicamv2
         restart: always
