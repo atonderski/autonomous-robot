@@ -27,6 +27,7 @@ public:
     , m_yaw{}
     , m_measurements{6}
     , m_detectionAngle{}
+    , m_detectionDistance{}
     , m_frontDistanceMutex{}
     , m_rearDistanceMutex{}
     , m_leftVoltageMutex{}
@@ -34,7 +35,8 @@ public:
     , m_groundSteeringAngleMutex{}
     , m_pedalPositionMutex{}
     , m_measurementsMutex{}
-    , m_detectionMutex{}
+    , m_detectionAngleMutex{}
+    , m_detectionDistanceMutex{}
     {
     }
 
@@ -103,8 +105,13 @@ public:
     }
 
     void carDetection(float angle) noexcept {
-        std::lock_guard<std::mutex> lock(m_detectionMutex);
+        std::lock_guard<std::mutex> lock(m_detectionAngleMutex);
         m_detectionAngle = angle;
+    }
+
+    void carDistance(float distance) noexcept {
+        std::lock_guard<std::mutex> lock(m_detectionDistanceMutex);
+        m_detectionDistance = distance;
     }
 
 protected:
@@ -148,9 +155,14 @@ protected:
         return m_yaw;
     }
 
-    double getDetectionAngle() noexcept {
-        std::lock_guard<std::mutex> lock(m_detectionMutex);
+    inline double getDetectionAngle() noexcept {
+        std::lock_guard<std::mutex> lock(m_detectionAngleMutex);
         return static_cast<double>(m_detectionAngle);
+    }
+
+    inline double getDetectionDistance() noexcept {
+        std::lock_guard<std::mutex> lock(m_detectionDistanceMutex);
+        return static_cast<double>(m_detectionDistance);
     }
 
     inline void setX(double x) noexcept {
@@ -222,6 +234,7 @@ private:
     double m_yaw;
     Eigen::VectorXd m_measurements;
     float m_detectionAngle;
+    float m_detectionDistance;
     std::mutex m_frontDistanceMutex;
     std::mutex m_rearDistanceMutex;
     std::mutex m_leftVoltageMutex;
@@ -229,7 +242,8 @@ private:
     std::mutex m_groundSteeringAngleMutex;
     std::mutex m_pedalPositionMutex;
     std::mutex m_measurementsMutex;
-    std::mutex m_detectionMutex;
+    std::mutex m_detectionAngleMutex;
+    std::mutex m_detectionDistanceMutex;
 };
 
 

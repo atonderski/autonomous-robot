@@ -15,9 +15,10 @@ public:
         , m_stepLeft{}
         , m_stepRight{}
         , m_stepDetectionAngle{}
+        , m_stepDetectionDistance{}
         , m_conf{"/opt/stalker.conf"}
         , m_accelerationRegulator{m_conf, DT}
-        , m_behaviourFollowRobot{m_conf, DT, &m_stepDetectionAngle, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
+        , m_behaviourFollowRobot{m_conf, DT, &m_stepDetectionAngle, &m_stepDetectionDistance, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
         {
             
         }
@@ -31,6 +32,7 @@ private:
     double m_stepLeft;
     double m_stepRight;
     double m_stepDetectionAngle;
+    double m_stepDetectionDistance;
 
     ConfigurationValues m_conf;
     AccelerationRegulator m_accelerationRegulator;

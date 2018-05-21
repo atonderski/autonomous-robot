@@ -108,6 +108,7 @@ int32_t main(int32_t argc, char **argv) {
     auto onDetection{[&controller](cluon::data::Envelope &&envelope) {
         auto detection = cluon::extractMessage<opendlv::logic::sensation::Point>(std::move(envelope));
         controller.carDetection(detection.azimuthAngle());
+        controller.carDistance(detection.distance());
     }};
 
     cluon::OD4Session od4{CID};

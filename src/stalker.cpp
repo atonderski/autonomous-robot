@@ -6,6 +6,7 @@ bool Stalker::step() noexcept {
     m_stepLeft = getLeftDistance();
     m_stepRight = getRightDistance();
     m_stepDetectionAngle = getDetectionAngle();
+    m_stepDetectionDistance = getDetectionDistance();
     
     m_behaviourFollowRobot.update();
 

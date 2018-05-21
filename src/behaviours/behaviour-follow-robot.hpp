@@ -5,9 +5,10 @@
 
 class BehaviourFollowRobot : public AugmentedFiniteStateMachine {
 public:
-    BehaviourFollowRobot(ConfigurationValues m_conf, double const DT, double *stepDetectionAngle, double *stepFront, double *stepRear, double *stepLeft, double *stepRight) noexcept
+    BehaviourFollowRobot(ConfigurationValues m_conf, double const DT, double *stepDetectionAngle, double *stepDetectionDistance, double *stepFront, double *stepRear, double *stepLeft, double *stepRight) noexcept
         : AugmentedFiniteStateMachine(m_conf, DT, stepFront, stepRear, stepLeft, stepRight)
         , m_pDetectionAngle{stepDetectionAngle}
+        , m_pDetectionDistance{stepDetectionDistance}
         , targetVisible{false}
     {
 
@@ -22,6 +23,7 @@ public:
 
 private:
     double const *m_pDetectionAngle;
+    double const *m_pDetectionDistance;
     bool targetVisible;
 
     BehaviourFollowRobot(BehaviourFollowRobot const &) = delete;
