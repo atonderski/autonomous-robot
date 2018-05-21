@@ -11,7 +11,7 @@ bool Stalker::step() noexcept {
 
     // Subsumption goes here:
     int pedalLogic{};
-    if (behaviourObject1.getActivationStatus()) {
+    if (m_behaviourFollowRobot.getActivationStatus()) {
         setGroundSteeringAngle(m_behaviourFollowRobot.m_groundSteeringAngle);
         pedalLogic = m_behaviourFollowRobot.m_pedalLogic;
     } else {

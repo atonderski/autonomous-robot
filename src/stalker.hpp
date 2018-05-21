@@ -4,7 +4,7 @@
 #include "controller.hpp"
 #include "configurationvalues.hpp"
 #include "accelerationregulator.hpp"
-//#include "behaviourclass.hpp"
+#include "behaviours/behaviour-follow-robot.hpp"
 
 class Stalker : public Controller {
 public:
@@ -17,7 +17,7 @@ public:
         , m_stepDetectionAngle{}
         , m_conf{"/opt/stalker.conf"}
         , m_accelerationRegulator{m_conf, DT}
-        , m_behaviourFollowRobot{m_conf, DT, &stepDetectionAngle, &stepFront, &stepRear, &stepLeft, &stepRight}
+        , m_behaviourFollowRobot{m_conf, DT, &m_stepDetectionAngle, &m_stepFront, &m_stepRear, &m_stepLeft, &m_stepRight}
         {
             
         }
