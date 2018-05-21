@@ -148,6 +148,11 @@ protected:
         return m_yaw;
     }
 
+    double getDetectionAngle() noexcept {
+        std::lock_guard<std::mutex> lock(m_detectionMutex);
+        return static_cast<double>(m_detectionAngle);
+    }
+
     inline void setX(double x) noexcept {
         m_x = x;
     }

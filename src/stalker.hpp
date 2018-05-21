@@ -14,9 +14,10 @@ public:
         , m_stepRear{}
         , m_stepLeft{}
         , m_stepRight{}
+        , m_stepDetectionAngle{}
         , m_conf{"/opt/stalker.conf"}
         , m_accelerationRegulator{m_conf, DT}
-        // Behaviour object initialized here
+        , m_behaviourFollowRobot{m_conf, DT, &stepDetectionAngle, &stepFront, &stepRear, &stepLeft, &stepRight}
         {
             
         }
@@ -29,10 +30,11 @@ private:
     double m_stepRear;
     double m_stepLeft;
     double m_stepRight;
+    double m_stepDetectionAngle;
 
     ConfigurationValues m_conf;
     AccelerationRegulator m_accelerationRegulator;
-    // BehaviourObject1 declared here
+    BehaviourFollowRobot m_behaviourFollowRobot;
 };
 
 #endif

@@ -5,21 +5,19 @@ bool Stalker::step() noexcept {
     m_stepRear = getRearDistance();
     m_stepLeft = getLeftDistance();
     m_stepRight = getRightDistance();
-
-    // Behaviour.update() goes here!
-    //behaviourObject1.update();
+    m_stepDetectionAngle = getDetectionAngle();
+    
+    m_behaviourFollowRobot.update();
 
     // Subsumption goes here:
     int pedalLogic{};
-    /*
     if (behaviourObject1.getActivationStatus()) {
-        setGroundSteeringAngle(behaviourObject1.m_groundSteeringAngle);
-        pedalLogic = behaviourObject1.m_pedalLogic;
+        setGroundSteeringAngle(m_behaviourFollowRobot.m_groundSteeringAngle);
+        pedalLogic = m_behaviourFollowRobot.m_pedalLogic;
     } else {
         setGroundSteeringAngle(0);
         pedalLogic = 0;
     }
-    */
 
     m_accelerationRegulator.setPedalLogic(pedalLogic);
     setPedalPositionUnscaled(m_accelerationRegulator.getPedalPosition());

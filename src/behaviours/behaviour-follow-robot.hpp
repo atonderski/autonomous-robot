@@ -5,8 +5,9 @@
 
 class BehaviourFollowRobot : public AugmentedFiniteStateMachine {
 public:
-    BehaviourFollowRobot(ConfigurationValues m_conf, double const DT, double *stepFront, double *stepRear, double *stepLeft, double *stepRight) noexcept
+    BehaviourFollowRobot(ConfigurationValues m_conf, double const DT, double const *stepDetectionAngle, double *stepFront, double *stepRear, double *stepLeft, double *stepRight) noexcept
         : AugmentedFiniteStateMachine(m_conf, DT, stepFront, stepRear, stepLeft, stepRight)
+        , m_pDetectionAngle{stepDetectionAngle}
         , targetVisible{false}
     {
 
@@ -20,6 +21,7 @@ public:
     void followTurnRight() noexcept;
 
 private:
+    double const *m_pDetectionAngle;
     bool targetVisible;
 
 };
