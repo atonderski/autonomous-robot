@@ -1,0 +1,4 @@
+.git
+detector
+Dockerfile*
+cmake-build-*

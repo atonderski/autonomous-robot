@@ -1,0 +1,54 @@
+# Copyright (C) 2018  Christian Berger
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Part to build example.
+FROM resin/armv7hf-debian:buster as builder
+RUN [ "cross-build-start" ]
+RUN apt-get update -y && apt-get install -y apt-utils
+RUN apt-get install -y cmake g++ make build-essential unzip wget libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev libtbb2
+# Install opencv
+RUN cd tmp && OPENCV_VERSION="3.4.1" && \
+	wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip -q && \
+	unzip -q ${OPENCV_VERSION}.zip && \
+	rm ${OPENCV_VERSION}.zip && \
+	mv opencv-${OPENCV_VERSION} OpenCV &&\
+	wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip -q && \
+	unzip -q ${OPENCV_VERSION}.zip && \
+	rm ${OPENCV_VERSION}.zip && \
+	mv opencv_contrib-${OPENCV_VERSION} OpenCV_contrib
+RUN cd tmp/OpenCV && mkdir build && cd build && \
+	cmake -D WITH_TBB=ON  -D CMAKE_INSTALL_PREFIX=/usr/local -D CMAKE_BUILD_TYPE=RELEASE -DOPENCV_EXTRA_MODULES_PATH=../../OpenCV_contrib/modules .. && \
+	make -j8 && \
+    make install
+ADD . /opt/sources
+WORKDIR /opt/sources
+RUN mkdir build && \
+    cd build && \
+    cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/tmp .. && \
+    make && make install 
+RUN [ "cross-build-end" ]  
+
+
+# Part to deploy example.
+FROM resin/raspberry-pi-debian:buster
+RUN [ "cross-build-start" ]
+RUN apt-get -y update
+RUN apt-get -y install libgtk2.0 libavcodec57 libavformat57 libswscale4 libtbb2
+COPY --from=builder /usr/local/lib/libopencv* /usr/local/lib/
+ENV LD_LIBRARY_PATH=/usr/local/lib
+WORKDIR /usr/bin
+COPY --from=builder /tmp/bin/detector .
+
+RUN [ "cross-build-end" ]  
