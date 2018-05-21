@@ -42,7 +42,6 @@ int32_t main(int32_t argc, char **argv) {
         retCode = 1;
     } else {
         bool const VERBOSE{commandlineArguments.count("verbose") != 0};
-        bool const TRAINCNN{std::stoi(commandlineArguments["cid"]) == 1};
         uint32_t const ID{(commandlineArguments["id"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["id"])) : 0};
         double const scale{(commandlineArguments["scale"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scale"])) : 1.1};
         uint32_t const numNeighbours{(commandlineArguments["num-neighbours"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["num-neighbours"])) : 30};

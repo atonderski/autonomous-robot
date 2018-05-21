@@ -49,7 +49,7 @@ bool CarFinder::findCar(cv::Mat frame) {
             std::cout << "Detection completed. Success = " << found << std::endl;
         }
     }
-    if (VERBOSE && FOUND) {
+    if (VERBOSE && found) {
         std::cout << "Target is described by bounding box: " << m_bbox << std::endl;
     }
     return found;

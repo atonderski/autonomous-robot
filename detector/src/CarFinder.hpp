@@ -21,7 +21,7 @@ public:
             , VERBOSE{verbose}
     {
         m_tracker = cv::TrackerKCF::create();
-        m_classifier.load("../data/cascade.xml");
+        m_classifier.load("cascade.xml");
     }
 
     float getAngle();

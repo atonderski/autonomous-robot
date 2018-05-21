@@ -18,14 +18,18 @@ build-arm: arm detector-arm
 
 build-amd: amd detector-amd
 
+publish-detector-arm:
+	docker tag detector:armhf atonderski/detector:armhf
+	docker push atonderski/detector:armhf
+
 publish-arm:
 	docker tag autonomous-robot:armhf atonderski/autonomous-robot:armhf
-	docker tag detector:armhf atonderski/detector:armhf
 	docker push atonderski/autonomous-robot:armhf
-	docker push atonderski/detector:armhf
+
+publish-detector-amd:
+	docker tag detector:amd64 atonderski/detector:amd64
+	docker push atonderski/detector:amd64
 
 publish-amd:
 	docker tag autonomous-robot:amd64 atonderski/autonomous-robot:amd64
-	docker tag detector:amd64 atonderski/detector:amd64
 	docker push atonderski/autonomous-robot:amd64
-	docker push atonderski/detector:amd64
