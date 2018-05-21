@@ -26,6 +26,7 @@ public:
     , m_y{}
     , m_yaw{}
     , m_measurements{6}
+    , m_detectionAngle{}
     , m_frontDistanceMutex{}
     , m_rearDistanceMutex{}
     , m_leftVoltageMutex{}
@@ -33,6 +34,7 @@ public:
     , m_groundSteeringAngleMutex{}
     , m_pedalPositionMutex{}
     , m_measurementsMutex{}
+    , m_detectionMutex{}
     {
     }
 
@@ -98,6 +100,11 @@ public:
     void yawRateMeasurment(float yawRateReading) noexcept {
         std::lock_guard<std::mutex> lock(m_measurementsMutex);
         m_measurements(5) = yawRateReading;
+    }
+
+    void carDetection(float angle) noexcept {
+        std::lock_guard<std::mutex> lock(m_detectionMutex);
+        m_detectionAngle = angle;
     }
 
 protected:
@@ -209,6 +216,7 @@ private:
     double m_y;
     double m_yaw;
     Eigen::VectorXd m_measurements;
+    float m_detectionAngle;
     std::mutex m_frontDistanceMutex;
     std::mutex m_rearDistanceMutex;
     std::mutex m_leftVoltageMutex;
@@ -216,6 +224,7 @@ private:
     std::mutex m_groundSteeringAngleMutex;
     std::mutex m_pedalPositionMutex;
     std::mutex m_measurementsMutex;
+    std::mutex m_detectionMutex;
 };
 
 

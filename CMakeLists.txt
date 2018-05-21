@@ -39,14 +39,28 @@ find_package(Threads REQUIRED)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Is this one really necessary? # Yes I need it for vim autocomplete
 
+find_program(FOUND_CLUON cluon-msc)
+
 ################################################################################
-# Extract cluon-msc from cluon-complete.hpp.
-add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/cluon-msc
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/${CLUON_COMPLETE} ${CMAKE_BINARY_DIR}/cluon-complete.hpp
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/cluon-complete.hpp ${CMAKE_BINARY_DIR}/cluon-complete.cpp
-    COMMAND ${CMAKE_CXX_COMPILER} -o ${CMAKE_BINARY_DIR}/cluon-msc ${CMAKE_BINARY_DIR}/cluon-complete.cpp -std=c++14 -pthread -D HAVE_CLUON_MSC
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/${CLUON_COMPLETE})
+# Find installed libcluon
+if(FOUND_CLUON)
+    message(STATUS "Libcluon: found at " ${FOUND_CLUON})
+    add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/cluon-msc
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMAND ${CMAKE_COMMAND} -E create_symlink ${FOUND_CLUON} ${CMAKE_BINARY_DIR}/cluon-msc
+            COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/${CLUON_COMPLETE} ${CMAKE_BINARY_DIR}/cluon-complete.hpp
+            COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/cluon-complete.hpp ${CMAKE_BINARY_DIR}/cluon-complete.cpp)
+else()
+    ################################################################################
+    # Extract cluon-msc from cluon-complete.hpp.
+    message(STATUS "Libcluon: not found - generating cluon-msc from header file")
+    add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/cluon-msc
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/${CLUON_COMPLETE} ${CMAKE_BINARY_DIR}/cluon-complete.hpp
+            COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/cluon-complete.hpp ${CMAKE_BINARY_DIR}/cluon-complete.cpp
+            COMMAND ${CMAKE_CXX_COMPILER} -o ${CMAKE_BINARY_DIR}/cluon-msc ${CMAKE_BINARY_DIR}/cluon-complete.cpp -std=c++14 -pthread -D HAVE_CLUON_MSC
+            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/${CLUON_COMPLETE})
+endif()
 
 ################################################################################
 # Generate opendlv-standard-message-set.{hpp,cpp} from ${OPENDLV_STANDARD_MESSAGE_SET} file.

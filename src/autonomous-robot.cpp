@@ -105,12 +105,17 @@ int32_t main(int32_t argc, char **argv) {
         controller.vyMeasurment(kinematicState.vy());
         controller.yawRateMeasurment(kinematicState.yawRate());
     }};
+    auto onDetection{[&controller](cluon::data::Envelope &&envelope) {
+        auto detection = cluon::extractMessage<opendlv::logic::sensation::Point>(std::move(envelope));
+        controller.carDetection(detection.azimuthAngle());
+    }};
 
     cluon::OD4Session od4{CID};
     od4.dataTrigger(opendlv::proxy::DistanceReading::ID(), onDistanceReading);
     od4.dataTrigger(opendlv::proxy::VoltageReading::ID(), onVoltageReading);
     od4.dataTrigger(opendlv::sim::Frame::ID(), onFrame);
     od4.dataTrigger(opendlv::sim::KinematicState::ID(), onKinematicState);
+    od4.dataTrigger(opendlv::logic::sensation::Point::ID(), onDetection);
 
     auto atFrequency{[&VERBOSE, &controller, &od4, &measureTimeOfStep, &scalePedalToSimulation]() -> bool {
         

@@ -27,7 +27,7 @@
 
 #include "cluon-complete.hpp"
 #include "opendlv-standard-message-set.hpp"
-#include "CarFinder.h"
+#include "CarFinder.hpp"
 
 
 int32_t main(int32_t argc, char **argv) {
@@ -37,18 +37,21 @@ int32_t main(int32_t argc, char **argv) {
         std::cerr << argv[0] << " accesses video data using shared memory provided using the command line parameter --name=." << std::endl;
         std::cerr << "Usage:   " << argv[0] << " --cid=<OpenDaVINCI session> --name=<name for the associated shared memory> [--id=<sender stamp>] [--verbose]" << std::endl;
         std::cerr << "         --name:    name of the shared memory to use" << std::endl;
-        std::cerr << "         --verbose: when set, a thumbnail of the image contained in the shared memory is sent" << std::endl;
+        std::cerr << "         --verbose: when set, more information is printed" << std::endl;
         std::cerr << "Example: " << argv[0] << " --cid=111 --name=cam0" << std::endl;
         retCode = 1;
     } else {
         bool const VERBOSE{commandlineArguments.count("verbose") != 0};
         bool const TRAINCNN{std::stoi(commandlineArguments["cid"]) == 1};
+        uint32_t const ID{(commandlineArguments["id"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["id"])) : 0};
+        double const scale{(commandlineArguments["scale"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scale"])) : 1.1};
+        uint32_t const numNeighbours{(commandlineArguments["num-neighbours"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["num-neighbours"])) : 30};
+        std::string const NAME{(commandlineArguments["name"].size() != 0) ? commandlineArguments["name"] : "/cam0"};
+
         uint32_t const WIDTH{1280};
         uint32_t const HEIGHT{960};
         uint32_t const BPP{24};
-        uint32_t const ID{(commandlineArguments["id"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["id"])) : 0};
 
-        std::string const NAME{(commandlineArguments["name"].size() != 0) ? commandlineArguments["name"] : "/cam0"};
         cluon::OD4Session od4{static_cast<uint16_t>(std::stoi(commandlineArguments["cid"]))};
 
         std::unique_ptr <cluon::SharedMemory> sharedMemory(new cluon::SharedMemory{NAME});
@@ -65,23 +68,22 @@ int32_t main(int32_t argc, char **argv) {
             image->imageDataOrigin = image->imageData;
             sharedMemory->unlock();
 
-            CarFinder carFinder{WIDTH};
+            uint32_t const scaledWidth{640};
+            uint32_t const scaledHeight{480};
+            CarFinder carFinder{scaledWidth, scale, numNeighbours, VERBOSE};
 
             int32_t i = 0;
             while (od4.isRunning()) {
                 sharedMemory->wait();
 
                 // Make a scaled copy of the original image.
-                int32_t const width = 256;
-                int32_t const height = 196;
                 cv::Mat scaledImage;
                 {
                     sharedMemory->lock();
                     cv::Mat sourceImage = cv::cvarrToMat(image, false);
-                    cv::resize(sourceImage, scaledImage, cv::Size(width, height), 0, 0, cv::INTER_NEAREST);
+                    cv::resize(sourceImage, scaledImage, cv::Size(scaledWidth, scaledHeight), 0, 0, cv::INTER_NEAREST);
                     sharedMemory->unlock();
                 }
-
 
                 // Make an estimation.
                 bool objectFound = carFinder.findCar(scaledImage);
@@ -95,8 +97,7 @@ int32_t main(int32_t argc, char **argv) {
 //                        cv::imwrite(FILENAME, scaledImage);
 //                        i++;
 //                        std::this_thread::sleep_for(std::chrono::seconds(1));
-                        std::cout << "The target was found at angle " << estimatedDetectionAngle
-                                  << " at distance " << estimatedDetectionDistance << std::endl;
+                        std::cout << "The target was found at angle " << estimatedDetectionAngle << std::endl;
                     }
 
                     // In the end, send a message that is received by the control logic.

@@ -1,6 +1,12 @@
 version: '2'
 
 services:
+    autonomous-robot:
+        image: autonomous-robot:armhf
+        depends_on:
+          - detector
+        command: "--cid=112 --freq=10 --stalker"
+
     device-camera-rpicamv2:
         image: chalmersrevere/opendlv-device-camera-rpicamv2-armhf:v0.0.1
         volumes:
@@ -10,10 +16,10 @@ services:
           memlock:
             soft: 4000000
             hard: 4000000
-        command: "/usr/bin/opendlv-device-camera-rpicamv2 --cid=111"
+        command: "/usr/bin/opendlv-device-camera-rpicamv2 --cid=112"
     
     detector:
-        image: detector
+        image: detector:armhf
         depends_on:
           - device-camera-rpicamv2
         restart: always
@@ -26,4 +32,4 @@ services:
           memlock:
             soft: 4000000
             hard: 4000000
-        command: "/usr/bin/detector --cid=111 --name=cam0 --width=640 --height=480 --bpp=24 --verbose=0"
+        command: "/usr/bin/detector --cid=112 --name=cam0 --scale=1.1 --num-neighbours=30 --verbose"

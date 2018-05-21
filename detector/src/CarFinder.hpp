@@ -12,8 +12,17 @@
 
 class CarFinder {
 public:
-
-    CarFinder(uint32_t);
+    CarFinder(uint32_t imageWidth, double scale, uint32_t numNeighbours, bool verbose) noexcept
+            : m_bbox{}
+            , m_isTracking{false}
+            , m_scale{scale}
+            , m_numNeighbours{numNeighbours}
+            , IMAGE_WIDTH{imageWidth}
+            , VERBOSE{verbose}
+    {
+        m_tracker = cv::TrackerKCF::create();
+        m_classifier.load("../data/cascade.xml");
+    }
 
     float getAngle();
 
@@ -31,7 +40,10 @@ private:
     cv::CascadeClassifier m_classifier;
     cv::Rect2d m_bbox;
     bool m_isTracking;
-    const uint32_t IMAGE_WIDTH;
+    double m_scale;
+    uint32_t m_numNeighbours;
+    uint32_t const IMAGE_WIDTH;
+    bool const VERBOSE;
 };
 
 
