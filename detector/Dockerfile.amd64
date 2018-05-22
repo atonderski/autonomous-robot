@@ -31,7 +31,9 @@ RUN cd tmp/OpenCV && mkdir build && cd build && \
 	cmake -D WITH_TBB=ON  -D CMAKE_INSTALL_PREFIX=/usr/local -D CMAKE_BUILD_TYPE=RELEASE -DOPENCV_EXTRA_MODULES_PATH=../../OpenCV_contrib/modules .. && \
 	make -j8 && \
     make install
-ADD src /opt/sources/src
+COPY CMakeLists.txt *.cmake /opt/sources/
+COPY src/ /opt/sources/src/
+RUN ls /opt/sources/
 WORKDIR /opt/sources
 RUN mkdir build && \
     cd build && \

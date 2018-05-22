@@ -24,11 +24,11 @@ bool CarFinder::track(cv::Mat &frame) {
 }
 
 float CarFinder::getAngle() {
-    return static_cast<float>((m_bbox.x + m_bbox.width * .5) / (IMAGE_WIDTH * 0.5));
+    return static_cast<float>(1.0 - (m_bbox.x + m_bbox.width * .5) / (IMAGE_WIDTH * 0.5));
 }
 
 float CarFinder::getDistance() {
-    return 0;
+    return static_cast<float>(m_bbox.height / IMAGE_HEIGHT);
 }
 
 bool CarFinder::findCar(cv::Mat frame) {

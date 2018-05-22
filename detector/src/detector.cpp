@@ -69,9 +69,9 @@ int32_t main(int32_t argc, char **argv) {
             image->imageDataOrigin = image->imageData;
             sharedMemory->unlock();
 
-            uint32_t const scaledWidth{640};
+            uint32_t const scaledwidth{640};
             uint32_t const scaledHeight{480};
-            CarFinder carFinder{scaledWidth, scale, numNeighbours, TRACKER, VERBOSE};
+            CarFinder carFinder{scaledwidth, scaledHeight, scale, numNeighbours, TRACKER, VERBOSE};
 
             int32_t i = 0;
             while (od4.isRunning()) {
@@ -82,7 +82,7 @@ int32_t main(int32_t argc, char **argv) {
                 {
                     sharedMemory->lock();
                     cv::Mat sourceImage = cv::cvarrToMat(image, false);
-                    cv::resize(sourceImage, scaledImage, cv::Size(scaledWidth, scaledHeight), 0, 0, cv::INTER_NEAREST);
+                    cv::resize(sourceImage, scaledImage, cv::Size(scaledwidth, scaledHeight), 0, 0, cv::INTER_NEAREST);
                     sharedMemory->unlock();
                 }
 
@@ -98,7 +98,8 @@ int32_t main(int32_t argc, char **argv) {
 //                        cv::imwrite(FILENAME, scaledImage);
 //                        i++;
 //                        std::this_thread::sleep_for(std::chrono::seconds(1));
-                        std::cout << "The target was found at angle " << estimatedDetectionAngle << std::endl;
+                        std::cout << "The target was found at angle " << estimatedDetectionAngle
+                                  << " and distance " << estimatedDetectionDistance << std::endl;
                     }
 
                     // In the end, send a message that is received by the control logic.
