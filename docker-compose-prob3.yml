@@ -19,17 +19,15 @@ services:
         command: "/usr/bin/opendlv-device-camera-rpicamv2 --cid=112"
     
     detector:
-        image: atonderski/detector:armhf
+        image: detector:armhf
         depends_on:
           - device-camera-rpicamv2
         restart: always
-        working_dir: /opt/
         volumes:
           - "/dev/shm:/dev/shm"
-          - .:/opt/
         privileged: true
         ulimits:
           memlock:
             soft: 4000000
             hard: 4000000
-        command: "/usr/bin/detector --cid=112 --name=cam0 --scale=1.1 --num-neighbours=30 --verbose"
+        command: bash -c "sleep 5; /usr/bin/detector --cid=112 --name=cam0 --scale=1.1 --num-neighbours=30 --tracker=goturn --verbose"

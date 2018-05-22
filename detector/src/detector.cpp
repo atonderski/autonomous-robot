@@ -43,15 +43,17 @@ int32_t main(int32_t argc, char **argv) {
     } else {
         bool const VERBOSE{commandlineArguments.count("verbose") != 0};
         uint32_t const ID{(commandlineArguments["id"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["id"])) : 0};
-        double const scale{(commandlineArguments["scale"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scale"])) : 1.1};
+        double const scale{(commandlineArguments["scale"].size() != 0) ? static_cast<double>(std::stod(commandlineArguments["scale"])) : 1.1};
         uint32_t const numNeighbours{(commandlineArguments["num-neighbours"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["num-neighbours"])) : 30};
         std::string const NAME{(commandlineArguments["name"].size() != 0) ? commandlineArguments["name"] : "/cam0"};
+        std::string const TRACKER{(commandlineArguments["tracker"].size() != 0) ? commandlineArguments["tracker"] : "kcf"};
 
         uint32_t const WIDTH{1280};
         uint32_t const HEIGHT{960};
         uint32_t const BPP{24};
 
         cluon::OD4Session od4{static_cast<uint16_t>(std::stoi(commandlineArguments["cid"]))};
+
 
         std::unique_ptr <cluon::SharedMemory> sharedMemory(new cluon::SharedMemory{NAME});
         if (sharedMemory && sharedMemory->valid()) {
@@ -69,7 +71,7 @@ int32_t main(int32_t argc, char **argv) {
 
             uint32_t const scaledWidth{640};
             uint32_t const scaledHeight{480};
-            CarFinder carFinder{scaledWidth, scale, numNeighbours, VERBOSE};
+            CarFinder carFinder{scaledWidth, scale, numNeighbours, TRACKER, VERBOSE};
 
             int32_t i = 0;
             while (od4.isRunning()) {

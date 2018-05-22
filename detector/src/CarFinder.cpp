@@ -44,6 +44,9 @@ bool CarFinder::findCar(cv::Mat frame) {
         }
     }
     if (!found) {
+        if (VERBOSE){
+            std::cout << "Running full detection" << std::endl;
+        }
         found = detect(frame);
         if (VERBOSE) {
             std::cout << "Detection completed. Success = " << found << std::endl;

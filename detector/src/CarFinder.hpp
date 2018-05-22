@@ -12,7 +12,7 @@
 
 class CarFinder {
 public:
-    CarFinder(uint32_t imageWidth, double scale, uint32_t numNeighbours, bool verbose) noexcept
+    CarFinder(uint32_t imageWidth, double scale, uint32_t numNeighbours, string trackerType, bool verbose) noexcept
             : m_bbox{}
             , m_isTracking{false}
             , m_scale{scale}
@@ -20,8 +20,14 @@ public:
             , IMAGE_WIDTH{imageWidth}
             , VERBOSE{verbose}
     {
-        m_tracker = cv::TrackerKCF::create();
-        m_classifier.load("cascade.xml");
+        if (trackerType == "kcf")
+            m_tracker = TrackerKCF::create();
+        else if (trackerType == "goturn")
+            m_tracker = TrackerGOTURN::create();
+        else
+            throw std::invalid_argument("tracker type not supported");
+
+        m_classifier.load("/usr/share/cascade.xml");
     }
 
     float getAngle();
