@@ -28,7 +28,7 @@ float CarFinder::getDistance() {
     return static_cast<float>(m_bbox.height / IMAGE_HEIGHT);
 }
 
-bool CarFinder::findCar(cv::Mat &frame) {
+bool CarFinder::findCar(cv::Mat frame) {
     bool found = false;
     if (m_isTracking) {
         found = track(frame);
@@ -65,7 +65,9 @@ bool CarFinder::findCar(cv::Mat &frame) {
     return found;
 }
 
-void CarFinder::initTracker(cv::Mat &frame) {
+void CarFinder::initTracker(cv::Mat frame) {
+    if(m_tracker)
+        m_tracker->clear();
     if (TRACKER_TYPE == "kcf")
         m_tracker = cv::TrackerKCF::create();
     else if (TRACKER_TYPE == "goturn")

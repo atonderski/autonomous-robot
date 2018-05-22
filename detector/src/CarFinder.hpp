@@ -31,14 +31,14 @@ public:
 
     float getDistance();
 
-    bool findCar(cv::Mat &);
+    bool findCar(cv::Mat);
 
 protected:
     bool track(cv::Mat &);
 
     bool detect(cv::Mat &);
 
-    void initTracker(cv::Mat &);
+    void initTracker(cv::Mat);
 private:
     cv::Ptr<cv::Tracker> m_tracker;
     cv::CascadeClassifier m_classifier;

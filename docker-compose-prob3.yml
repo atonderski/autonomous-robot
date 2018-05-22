@@ -7,7 +7,7 @@ services:
           - detector
         command: "--cid=112 --freq=10 --stalker"
 
-    device-camera-rpicamv2:
+    camera:
         image: chalmersrevere/opendlv-device-camera-rpicamv2-armhf:v0.0.1
         volumes:
           - "/dev/shm:/dev/shm"
@@ -21,7 +21,7 @@ services:
     detector:
         image: detector:armhf
         depends_on:
-          - device-camera-rpicamv2
+          - camera
         restart: always
         volumes:
           - "/dev/shm:/dev/shm"
@@ -30,4 +30,4 @@ services:
           memlock:
             soft: 4000000
             hard: 4000000
-        command: bash -c "sleep 5; /usr/bin/detector --cid=112 --name=cam0 --scale=1.1 --num-neighbours=30 --tracker=kcf --tracking-retries=10 --verbose"
+        command: bash -c "sleep 5; /usr/bin/detector --cid=112 --name=cam0 --scale=1.2 --num-neighbours=40 --tracker=kcf --tracking-retries=10 --verbose"
