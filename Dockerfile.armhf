@@ -14,7 +14,7 @@ WORKDIR /opt/sources
 RUN mkdir /tmp/build && \
     cd /tmp/build && \
     cmake -D CMAKE_BUILD_TYPE=Release /opt/sources && \
-    make -j 8 && cp autonomous-robot /tmp
+    make -j && cp autonomous-robot /tmp
 RUN [ "cross-build-end" ]
 
 # Deploy.

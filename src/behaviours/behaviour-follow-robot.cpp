@@ -28,9 +28,16 @@ void BehaviourFollowRobot::initialState() noexcept {
 // Maintain preferred ditance within a margin
 void BehaviourFollowRobot::atAlignedPositionState() noexcept {
     m_pedalLogic = 0;
-    if (*m_pDetectionDistance < PREFERRED_DISTANCE - MARGIN) {
+
+    double estimated_distance;
+    if (std::abs(*m_pDetectionAngle) < ULTRASONIC_ANGLE_THRESHOLD)
+        estimated_distance = *m_pFrontDistance;
+    else
+        estimated_distance = *m_pDetectionDistance;
+
+    if (estimated_distance < PREFERRED_DISTANCE - MARGIN) {
         setState(&BehaviourFollowRobot::followBackward);
-    } else if ((*m_pDetectionDistance > PREFERRED_DISTANCE + MARGIN)) {
+    } else if ((estimated_distance > PREFERRED_DISTANCE + MARGIN)) {
         setState(&BehaviourFollowRobot::followForward);
     }
 }
