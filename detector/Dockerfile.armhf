@@ -50,6 +50,6 @@ RUN apt-get -y install libgtk2.0 libavcodec57 libavformat57 libswscale4 libtbb2
 COPY --from=builder /usr/local/lib/libopencv* /usr/local/lib/
 ENV LD_LIBRARY_PATH=/usr/local/lib
 WORKDIR /usr/bin
-COPY data/cascade.xml /usr/share/cascade.xml
+COPY data/*.xml /usr/share/
 COPY --from=builder /tmp/bin/detector .
 RUN [ "cross-build-end" ]

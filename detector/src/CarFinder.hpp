@@ -12,7 +12,7 @@
 
 class CarFinder {
 public:
-    CarFinder(uint32_t imageWidth, uint32_t imageHeight, double scale, uint32_t numNeighbours, uint32_t maxTrackingRetries, std::string trackerType, bool verbose) noexcept
+    CarFinder(uint32_t imageWidth, uint32_t imageHeight, double scale, uint32_t numNeighbours, uint32_t maxTrackingRetries, std::string trackerType, std::string cascadeFile, bool verbose) noexcept
             : m_bbox{}
             , m_isTracking{false}
             , m_scale{scale}
@@ -24,7 +24,7 @@ public:
             , IMAGE_HEIGHT{imageHeight}
             , VERBOSE{verbose}
     {
-        m_classifier.load("/usr/share/cascade.xml");
+        m_classifier.load(cascadeFile);
     }
 
     float getAngle();

@@ -47,6 +47,7 @@ int32_t main(int32_t argc, char **argv) {
         uint32_t const numNeighbours{(commandlineArguments["num-neighbours"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["num-neighbours"])) : 30};
         std::string const NAME{(commandlineArguments["name"].size() != 0) ? commandlineArguments["name"] : "/cam0"};
         std::string const TRACKER{(commandlineArguments["tracker"].size() != 0) ? commandlineArguments["tracker"] : "kcf"};
+        std::string const CASCADE_FILE{(commandlineArguments["cascade-file"].size() != 0) ? commandlineArguments["cascade-file"] : "/usr/share/cascade.xml"};
         uint32_t const SCALED_WIDTH{(commandlineArguments["scaled-w"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scaled-w"])) : 640};
         uint32_t const SCALED_HEIGHT{(commandlineArguments["scaled-h"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scaled-h"])) : 480};
         uint32_t const TRACKING_RETRIES{(commandlineArguments["tracking-retries"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["tracking-retries"])) : 3};
@@ -72,7 +73,7 @@ int32_t main(int32_t argc, char **argv) {
             image->imageDataOrigin = image->imageData;
             sharedMemory->unlock();
 
-            CarFinder carFinder{SCALED_WIDTH, SCALED_HEIGHT, scale, numNeighbours, TRACKING_RETRIES, TRACKER, VERBOSE};
+            CarFinder carFinder{SCALED_WIDTH, SCALED_HEIGHT, scale, numNeighbours, TRACKING_RETRIES, TRACKER, CASCADE_FILE, VERBOSE};
 
             int32_t i = 0;
             while (od4.isRunning()) {

@@ -3,12 +3,14 @@ version: '2'
 services:
     autonomous-robot:
         image: atonderski/autonomous-robot:armhf
+        network_mode: host
         depends_on:
           - detector
         command: "--cid=112 --freq=10 --stalker"
 
     camera:
         image: chalmersrevere/opendlv-device-camera-rpicamv2-armhf:v0.0.1
+        network_mode: host
         volumes:
           - "/dev/shm:/dev/shm"
         privileged: true
@@ -20,6 +22,7 @@ services:
     
     detector:
         image: atonderski/detector:armhf
+        network_mode: host
         depends_on:
           - camera
         restart: always

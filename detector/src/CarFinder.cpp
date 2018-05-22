@@ -25,7 +25,8 @@ float CarFinder::getAngle() {
 }
 
 float CarFinder::getDistance() {
-    return static_cast<float>(m_bbox.height / IMAGE_HEIGHT);
+    //this could be a tuning constant
+    return static_cast<float>(0.2 / (m_bbox.height / IMAGE_HEIGHT));
 }
 
 bool CarFinder::findCar(cv::Mat frame) {
@@ -33,15 +34,16 @@ bool CarFinder::findCar(cv::Mat frame) {
     if (m_isTracking) {
         found = track(frame);
         if (found) {
-            m_trackingRetries = 0;
+//            m_trackingRetries = 0;
             if (VERBOSE)
                 std::cout << "Tracking successful!" << std::endl;
         } else {
             m_trackingRetries++;
-            if (m_trackingRetries < MAX_TRACKING_RETRIES)
+            if (m_trackingRetries > MAX_TRACKING_RETRIES) {
                 m_isTracking = false;
                 if (VERBOSE)
                     std::cout << "Tracking failed, retrying next frame!" << std::endl;
+            }
             else if (VERBOSE)
                 std::cout << "Tracking failed, no more retries!" << std::endl;
         }
@@ -54,14 +56,14 @@ bool CarFinder::findCar(cv::Mat frame) {
         if (VERBOSE) {
             std::cout << "Detection completed. Success = " << found << std::endl;
         }
+        if (found) {
+            initTracker(frame);
+            m_trackingRetries = 0;
+            m_isTracking = true;
+        }
     }
-    if (found) {
-        if (VERBOSE)
-            std::cout << "Target is described by bounding box: " << m_bbox << std::endl;
-        initTracker(frame);
-        m_trackingRetries = 0;
-        m_isTracking = true;
-    }
+    if (VERBOSE && found)
+        std::cout << "Target is described by bounding box: " << m_bbox << std::endl;
     return found;
 }
 
@@ -75,5 +77,4 @@ void CarFinder::initTracker(cv::Mat frame) {
     else
         std::cout << "WARNING! tracker type not supported" << std::endl;
     m_tracker->init(frame, m_bbox);
-
 }

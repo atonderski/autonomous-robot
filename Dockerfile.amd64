@@ -9,7 +9,9 @@ RUN apk update && \
         make \
         eigen@community
 RUN apk add libcluon --no-cache --repository https://chrberger.github.io/libcluon/alpine/v3.7 --allow-untrusted
-ADD . /opt/sources
+COPY CMakeLists.txt *.cmake /opt/sources/
+COPY src/ /opt/sources/src/
+COPY thirdparty/ /opt/sources/thirdparty/
 WORKDIR /opt/sources
 RUN mkdir /tmp/build && \
     cd /tmp/build && \
@@ -21,8 +23,5 @@ FROM alpine:edge
 RUN mkdir /opt
 WORKDIR /opt
 COPY --from=builder /tmp/autonomous-robot ./ 
-COPY --from=builder /opt/sources/subsumer.conf ./
-COPY --from=builder /opt/sources/pathfinder.conf ./
-COPY --from=builder /opt/sources/stalker.conf ./
-COPY --from=builder /opt/sources/simulation-map.txt ./
+COPY *.conf *.txt ./
 ENTRYPOINT ["/opt/autonomous-robot"]

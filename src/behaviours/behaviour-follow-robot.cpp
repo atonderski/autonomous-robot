@@ -33,7 +33,7 @@ void BehaviourFollowRobot::atAlignedPositionState() noexcept {
     if (std::abs(*m_pDetectionAngle) < ULTRASONIC_ANGLE_THRESHOLD)
         estimated_distance = *m_pFrontDistance;
     else
-        estimated_distance = *m_pDetectionDistance;
+        estimated_distance = (*m_pDetectionDistance);
 
     if (estimated_distance < PREFERRED_DISTANCE - MARGIN) {
         setState(&BehaviourFollowRobot::followBackward);
@@ -44,7 +44,14 @@ void BehaviourFollowRobot::atAlignedPositionState() noexcept {
 
 void BehaviourFollowRobot::followForward() noexcept {
     m_pedalLogic = 1;
-    if (*m_pDetectionDistance < PREFERRED_DISTANCE + MARGIN) {
+
+    double estimated_distance;
+    if (std::abs(*m_pDetectionAngle) < ULTRASONIC_ANGLE_THRESHOLD)
+        estimated_distance = *m_pFrontDistance;
+    else
+        estimated_distance = (*m_pDetectionDistance);
+
+    if (estimated_distance < PREFERRED_DISTANCE + MARGIN) {
         setState(&BehaviourFollowRobot::atAlignedPositionState);
     }
 }
@@ -52,7 +59,14 @@ void BehaviourFollowRobot::followForward() noexcept {
 void BehaviourFollowRobot::followBackward() noexcept {
     m_pedalLogic = -1;
     m_groundSteeringAngle = (-1) * m_groundSteeringAngle; // Flip direction of steering because we're going in reverse. Steering is calculated every turn in the universal state.
-    if (*m_pDetectionDistance > PREFERRED_DISTANCE - MARGIN) {
+
+    double estimated_distance;
+    if (std::abs(*m_pDetectionAngle) < ULTRASONIC_ANGLE_THRESHOLD)
+        estimated_distance = *m_pFrontDistance;
+    else
+        estimated_distance = (*m_pDetectionDistance);
+
+    if (estimated_distance > PREFERRED_DISTANCE - MARGIN) {
         setState(&BehaviourFollowRobot::atAlignedPositionState); // Stop reversing as soon as we are within the margin of preferred distance
     }
 }
