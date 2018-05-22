@@ -47,6 +47,8 @@ int32_t main(int32_t argc, char **argv) {
         uint32_t const numNeighbours{(commandlineArguments["num-neighbours"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["num-neighbours"])) : 30};
         std::string const NAME{(commandlineArguments["name"].size() != 0) ? commandlineArguments["name"] : "/cam0"};
         std::string const TRACKER{(commandlineArguments["tracker"].size() != 0) ? commandlineArguments["tracker"] : "kcf"};
+        uint32_t const SCALED_WIDTH{(commandlineArguments["scaled-w"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scaled-w"])) : 640};
+        uint32_t const SCALED_HEIGHT{(commandlineArguments["scaled-h"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scaled-h"])) : 480};
 
         uint32_t const WIDTH{1280};
         uint32_t const HEIGHT{960};
@@ -69,9 +71,7 @@ int32_t main(int32_t argc, char **argv) {
             image->imageDataOrigin = image->imageData;
             sharedMemory->unlock();
 
-            uint32_t const scaledwidth{640};
-            uint32_t const scaledHeight{480};
-            CarFinder carFinder{scaledwidth, scaledHeight, scale, numNeighbours, TRACKER, VERBOSE};
+            CarFinder carFinder{SCALED_WIDTH, SCALED_HEIGHT, scale, numNeighbours, TRACKER, VERBOSE};
 
             int32_t i = 0;
             while (od4.isRunning()) {
@@ -82,7 +82,7 @@ int32_t main(int32_t argc, char **argv) {
                 {
                     sharedMemory->lock();
                     cv::Mat sourceImage = cv::cvarrToMat(image, false);
-                    cv::resize(sourceImage, scaledImage, cv::Size(scaledwidth, scaledHeight), 0, 0, cv::INTER_NEAREST);
+                    cv::resize(sourceImage, scaledImage, cv::Size(SCALED_WIDTH, SCALED_HEIGHT), 0, 0, cv::INTER_NEAREST);
                     sharedMemory->unlock();
                 }
 
