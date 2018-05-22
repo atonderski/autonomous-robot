@@ -1,3 +1,4 @@
 Dockerfile*
 cmake-build-*
 docker-compose*
+data/goturn*

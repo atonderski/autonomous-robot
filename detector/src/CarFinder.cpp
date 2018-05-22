@@ -38,7 +38,7 @@ bool CarFinder::findCar(cv::Mat &frame) {
                 std::cout << "Tracking successful!" << std::endl;
         } else {
             m_trackingRetries++;
-            if (m_trackingRetries < _m_maxTrackingRetries)
+            if (m_trackingRetries < MAX_TRACKING_RETRIES)
                 m_isTracking = false;
                 if (VERBOSE)
                     std::cout << "Tracking failed, retrying next frame!" << std::endl;
