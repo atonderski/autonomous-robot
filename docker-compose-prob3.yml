@@ -19,7 +19,7 @@ services:
         command: "/usr/bin/opendlv-device-camera-rpicamv2 --cid=112"
     
     detector:
-        image: detector:armhf
+        image: atonderski/detector:armhf
         depends_on:
           - camera
         restart: always
