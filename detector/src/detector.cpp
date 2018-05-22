@@ -49,6 +49,7 @@ int32_t main(int32_t argc, char **argv) {
         std::string const TRACKER{(commandlineArguments["tracker"].size() != 0) ? commandlineArguments["tracker"] : "kcf"};
         uint32_t const SCALED_WIDTH{(commandlineArguments["scaled-w"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scaled-w"])) : 640};
         uint32_t const SCALED_HEIGHT{(commandlineArguments["scaled-h"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scaled-h"])) : 480};
+        uint32_t const TRACKING_RETRIES{(commandlineArguments["tracking-retries"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["tracking-retries"])) : 3};
 
         uint32_t const WIDTH{1280};
         uint32_t const HEIGHT{960};
@@ -71,7 +72,7 @@ int32_t main(int32_t argc, char **argv) {
             image->imageDataOrigin = image->imageData;
             sharedMemory->unlock();
 
-            CarFinder carFinder{SCALED_WIDTH, SCALED_HEIGHT, scale, numNeighbours, TRACKER, VERBOSE};
+            CarFinder carFinder{SCALED_WIDTH, SCALED_HEIGHT, scale, numNeighbours, TRACKING_RETRIES, TRACKER, VERBOSE};
 
             int32_t i = 0;
             while (od4.isRunning()) {

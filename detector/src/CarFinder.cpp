@@ -9,8 +9,6 @@ bool CarFinder::detect(cv::Mat &frame) {
     m_classifier.detectMultiScale(frame, detections, m_scale, m_numNeighbours, 0 | CV_HAAR_SCALE_IMAGE, cv::Size(60, 40), cv::Size(300, 200));
     if (!detections.empty()) {
         m_bbox = detections[0];
-        m_tracker->init(frame, m_bbox);
-        m_isTracking = true;
         return true;
     } else {
         return false;
@@ -19,7 +17,6 @@ bool CarFinder::detect(cv::Mat &frame) {
 
 bool CarFinder::track(cv::Mat &frame) {
     bool ok = m_tracker->update(frame, m_bbox);
-    m_isTracking = ok;
     return ok;
 }
 
@@ -31,19 +28,25 @@ float CarFinder::getDistance() {
     return static_cast<float>(m_bbox.height / IMAGE_HEIGHT);
 }
 
-bool CarFinder::findCar(cv::Mat frame) {
+bool CarFinder::findCar(cv::Mat &frame) {
     bool found = false;
     if (m_isTracking) {
         found = track(frame);
-        if (VERBOSE) {
-            if (found) {
+        if (found) {
+            m_trackingRetries = 0;
+            if (VERBOSE)
                 std::cout << "Tracking successful!" << std::endl;
-            } else {
-                std::cout << "Tracking failed!" << std::endl;
-            }
+        } else {
+            m_trackingRetries++;
+            if (m_trackingRetries < _m_maxTrackingRetries)
+                m_isTracking = false;
+                if (VERBOSE)
+                    std::cout << "Tracking failed, retrying next frame!" << std::endl;
+            else if (VERBOSE)
+                std::cout << "Tracking failed, no more retries!" << std::endl;
         }
     }
-    if (!found) {
+    if (!m_isTracking) {
         if (VERBOSE){
             std::cout << "Running full detection" << std::endl;
         }
@@ -52,8 +55,23 @@ bool CarFinder::findCar(cv::Mat frame) {
             std::cout << "Detection completed. Success = " << found << std::endl;
         }
     }
-    if (VERBOSE && found) {
-        std::cout << "Target is described by bounding box: " << m_bbox << std::endl;
+    if (found) {
+        if (VERBOSE)
+            std::cout << "Target is described by bounding box: " << m_bbox << std::endl;
+        initTracker(frame);
+        m_trackingRetries = 0;
+        m_isTracking = true;
     }
     return found;
+}
+
+void CarFinder::initTracker(cv::Mat &frame) {
+    if (TRACKER_TYPE == "kcf")
+        m_tracker = cv::TrackerKCF::create();
+    else if (TRACKER_TYPE == "goturn")
+        m_tracker = cv::TrackerGOTURN::create();
+    else
+        std::cout << "WARNING! tracker type not supported" << std::endl;
+    m_tracker->init(frame, m_bbox);
+
 }
