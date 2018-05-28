@@ -16,10 +16,14 @@ RUN cd tmp/OpenCV && mkdir build && cd build && \
 	make -j8 && \
     make install
 
+
 # Part to deploy example.
 FROM resin/amd64-debian:buster
 RUN apt-get -y update
 RUN apt-get -y install libgtk2.0 libavcodec57 libavformat57 libswscale4 libtbb2
 COPY --from=builder /usr/local/lib/libopencv* /usr/local/lib/
+COPY --from=builder /usr/local/share/OpenCV/*.cmake /usr/local/share/OpenCV/
+COPY --from=builder /usr/local/include/opencv/ /usr/local/include/opencv/
+COPY --from=builder /usr/local/include/opencv2/ /usr/local/include/opencv2/
 ENV LD_LIBRARY_PATH=/usr/local/lib
 
