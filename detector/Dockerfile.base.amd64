@@ -1,0 +1,25 @@
+FROM resin/amd64-debian:buster as builder
+# Do not use apt-get upgrade, something breaks...
+RUN apt-get update -y && apt-get install -y apt-utils # && apt-get upgrade -y
+RUN apt-get install -y cmake g++ make build-essential unzip wget libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev libtbb2
+RUN cd tmp && OPENCV_VERSION="3.4.1" && \
+	wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip -q && \
+	unzip -q ${OPENCV_VERSION}.zip && \
+	rm ${OPENCV_VERSION}.zip && \
+	mv opencv-${OPENCV_VERSION} OpenCV &&\
+	wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip -q && \
+	unzip -q ${OPENCV_VERSION}.zip && \
+	rm ${OPENCV_VERSION}.zip && \
+	mv opencv_contrib-${OPENCV_VERSION} OpenCV_contrib
+RUN cd tmp/OpenCV && mkdir build && cd build && \
+	cmake -D WITH_TBB=ON  -D CMAKE_INSTALL_PREFIX=/usr/local -D CMAKE_BUILD_TYPE=RELEASE -DOPENCV_EXTRA_MODULES_PATH=../../OpenCV_contrib/modules .. && \
+	make -j8 && \
+    make install
+
+# Part to deploy example.
+FROM resin/amd64-debian:buster
+RUN apt-get -y update
+RUN apt-get -y install libgtk2.0 libavcodec57 libavformat57 libswscale4 libtbb2
+COPY --from=builder /usr/local/lib/libopencv* /usr/local/lib/
+ENV LD_LIBRARY_PATH=/usr/local/lib
+
