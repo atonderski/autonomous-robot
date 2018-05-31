@@ -50,7 +50,10 @@ int32_t main(int32_t argc, char **argv) {
         std::string const CASCADE_FILE{(commandlineArguments["cascade-file"].size() != 0) ? commandlineArguments["cascade-file"] : "/usr/share/cascade.xml"};
         uint32_t const SCALED_WIDTH{(commandlineArguments["scaled-w"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scaled-w"])) : 640};
         uint32_t const SCALED_HEIGHT{(commandlineArguments["scaled-h"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scaled-h"])) : 480};
-        uint32_t const MAX_FRAMES_WITHOUT_DETECTION{(commandlineArguments["frames-without-detection"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["frames-without-detection"])) : 30};
+        uint32_t const CROP_TOP{(commandlineArguments["crop-top"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["crop-top"])) : 80};
+        uint32_t const CROP_BOTTOM{(commandlineArguments["crop-bottom"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["crop-bottom"])) : 150};
+        uint32_t const MAX_FRAMES_WITHOUT_DETECTION{
+                (commandlineArguments["frames-without-detection"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["frames-without-detection"])) : 30};
         double const DISTANCE_THRESHOLD{(commandlineArguments["distance-threshold"].size() != 0) ? static_cast<double>(std::stod(commandlineArguments["distance-threshold"])) : 0.9};
         double const DISTANCE_SCALING{(commandlineArguments["distance-scaling"].size() != 0) ? static_cast<double>(std::stod(commandlineArguments["distance-scaling"])) : 0.1};
         float const KCF_DETECT_THRESH{(commandlineArguments["kcf-detect-thresh"].size() != 0) ? static_cast<float>(std::stof(commandlineArguments["kcf-detect-thresh"])) : 0.5f};
@@ -95,17 +98,19 @@ int32_t main(int32_t argc, char **argv) {
                 }
 
                 // Make an estimation.
-                bool objectFound = carFinder.findCar(scaledImage);
+                bool objectFound = carFinder.findCar(scaledImage.rowRange(ROW_CROP_TOP, ROWS_BOTTOM));
 
                 if (objectFound) {
                     float estimatedDetectionAngle = carFinder.getAngle();
                     float estimatedDetectionDistance = carFinder.getDistance();
 
                     if (VERBOSE) {
-//                        std::string const FILENAME = std::to_string(i) + ".jpg";
-//                        cv::imwrite(FILENAME, scaledImage);
-//                        i++;
-//                        std::this_thread::sleep_for(std::chrono::seconds(1));
+                        if (i == 0) {
+                            std::string const FILENAME = std::to_string(i) + ".jpg";
+                            cv::imwrite(FILENAME, scaledImage);
+                            i++;
+                            std::this_thread::sleep_for(std::chrono::seconds(1));
+                        }
                         std::cout << "The target was found at angle " << estimatedDetectionAngle
                                   << " and distance " << estimatedDetectionDistance << std::endl;
                     }
