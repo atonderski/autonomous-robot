@@ -38,28 +38,34 @@ float CarFinder::getDistance() {
 }
 
 bool CarFinder::findCar(cv::Mat frame) {
-    bool found = track(frame);
-    if (found) {
+    bool success = track(frame);
+    if (success) {
         if (VERBOSE)
             std::cout << "Tracking successful!" << std::endl;
     }
-    if (!found || m_framesSinceLastDetection > MAX_FRAMES_WITHOUT_DETECTION) {
+    if (!success || m_framesSinceLastDetection > MAX_FRAMES_WITHOUT_DETECTION) {
         if (VERBOSE){
-            std::cout << "Running full detection" << std::endl;
+            std::cout << "Running full detection";
+            if (success) {
+                std::cout << " because it's time to update the detection" << std::endl;
+            } else{
+                std::cout << " because tracking failed" << std::endl;
+            }
         }
-        found = detect(frame);
+        bool detectionSuccess = detect(frame);
         if (VERBOSE) {
-            std::cout << "Detection completed. Success = " << found << std::endl;
+            std::cout << "Detection completed. Success = " << detectionSuccess << std::endl;
         }
-        if (found) {
+        if (detectionSuccess) {
             m_framesSinceLastDetection = 0;
             initTracker(frame);
+            success = true;
         }
     }
     m_framesSinceLastDetection ++;
-    if (VERBOSE && found)
+    if (VERBOSE && success)
         std::cout << "Target is described by bounding box: " << m_bbox << std::endl;
-    return found;
+    return success;
 }
 
 void CarFinder::initTracker(cv::Mat frame) {
