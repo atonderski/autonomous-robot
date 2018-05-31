@@ -50,7 +50,12 @@ int32_t main(int32_t argc, char **argv) {
         std::string const CASCADE_FILE{(commandlineArguments["cascade-file"].size() != 0) ? commandlineArguments["cascade-file"] : "/usr/share/cascade.xml"};
         uint32_t const SCALED_WIDTH{(commandlineArguments["scaled-w"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scaled-w"])) : 640};
         uint32_t const SCALED_HEIGHT{(commandlineArguments["scaled-h"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["scaled-h"])) : 480};
-        uint32_t const TRACKING_RETRIES{(commandlineArguments["tracking-retries"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["tracking-retries"])) : 3};
+        uint32_t const MAX_FRAMES_WITHOUT_DETECTION{(commandlineArguments["frames-without-detection"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["frames-without-detection"])) : 30};
+        double const DISTANCE_THRESHOLD{(commandlineArguments["distance-threshold"].size() != 0) ? static_cast<double>(std::stod(commandlineArguments["distance-threshold"])) : 0.9};
+        double const DISTANCE_SCALING{(commandlineArguments["distance-scaling"].size() != 0) ? static_cast<double>(std::stod(commandlineArguments["distance-scaling"])) : 0.1};
+        float const KCF_DETECT_THRESH{(commandlineArguments["kcf-detect-thresh"].size() != 0) ? static_cast<float>(std::stof(commandlineArguments["kcf-detect-thresh"])) : 0.5f};
+        float const KCF_INTERP_FACTOR{(commandlineArguments["kcf-interp-factor"].size() != 0) ? static_cast<float>(std::stof(commandlineArguments["kcf-interp-factor"])) : 0.075f};
+        uint32_t const KCF_COMPRESSED_SIZE{(commandlineArguments["kcf-compressed-size"].size() != 0) ? static_cast<uint32_t>(std::stoi(commandlineArguments["kcf-compressed-size"])) : 2};
 
         uint32_t const WIDTH{1280};
         uint32_t const HEIGHT{960};
@@ -73,7 +78,8 @@ int32_t main(int32_t argc, char **argv) {
             image->imageDataOrigin = image->imageData;
             sharedMemory->unlock();
 
-            CarFinder carFinder{SCALED_WIDTH, SCALED_HEIGHT, scale, numNeighbours, TRACKING_RETRIES, TRACKER, CASCADE_FILE, VERBOSE};
+            CarFinder carFinder{SCALED_WIDTH, SCALED_HEIGHT, scale, numNeighbours, MAX_FRAMES_WITHOUT_DETECTION, DISTANCE_THRESHOLD, DISTANCE_SCALING, TRACKER, CASCADE_FILE, VERBOSE,
+                                KCF_DETECT_THRESH, KCF_INTERP_FACTOR, KCF_COMPRESSED_SIZE};
 
             int32_t i = 0;
             while (od4.isRunning()) {

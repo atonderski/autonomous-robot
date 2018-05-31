@@ -7,15 +7,22 @@
 bool CarFinder::detect(cv::Mat &frame) {
     std::vector<cv::Rect> detections;
     m_classifier.detectMultiScale(frame, detections, m_scale, m_numNeighbours, 0 | CV_HAAR_SCALE_IMAGE, cv::Size(60, 40), cv::Size(300, 200));
-    if (!detections.empty()) {
+    uint32_t numDetections = detections.size();
+    if (numDetections == 1) {
         m_bbox = detections[0];
         return true;
     } else {
+        if (VERBOSE){
+            std::cout << "Found " << numDetections << " objects. Detection failed..." << std::endl;
+        }
         return false;
     }
 }
 
 bool CarFinder::track(cv::Mat &frame) {
+    if (!m_tracker) {
+        return false;
+    }
     bool ok = m_tracker->update(frame, m_bbox);
     return ok;
 }
@@ -26,29 +33,17 @@ float CarFinder::getAngle() {
 
 float CarFinder::getDistance() {
     //this could be a tuning constant
-    return static_cast<float>(0.2 / (m_bbox.height / IMAGE_HEIGHT));
+    double lowestPoint = (m_bbox.y + m_bbox.height) / IMAGE_HEIGHT;
+    return static_cast<float>((DISTANCE_THRESHOLD - lowestPoint)/DISTANCE_SCALING);
 }
 
 bool CarFinder::findCar(cv::Mat frame) {
-    bool found = false;
-    if (m_isTracking) {
-        found = track(frame);
-        if (found) {
-//            m_trackingRetries = 0;
-            if (VERBOSE)
-                std::cout << "Tracking successful!" << std::endl;
-        } else {
-            m_trackingRetries++;
-            if (m_trackingRetries > MAX_TRACKING_RETRIES) {
-                m_isTracking = false;
-                if (VERBOSE)
-                    std::cout << "Tracking failed, retrying next frame!" << std::endl;
-            }
-            else if (VERBOSE)
-                std::cout << "Tracking failed, no more retries!" << std::endl;
-        }
+    bool found = track(frame);
+    if (found) {
+        if (VERBOSE)
+            std::cout << "Tracking successful!" << std::endl;
     }
-    if (!m_isTracking) {
+    if (!found || m_framesSinceLastDetection > MAX_FRAMES_WITHOUT_DETECTION) {
         if (VERBOSE){
             std::cout << "Running full detection" << std::endl;
         }
@@ -57,11 +52,11 @@ bool CarFinder::findCar(cv::Mat frame) {
             std::cout << "Detection completed. Success = " << found << std::endl;
         }
         if (found) {
+            m_framesSinceLastDetection = 0;
             initTracker(frame);
-            m_trackingRetries = 0;
-            m_isTracking = true;
         }
     }
+    m_framesSinceLastDetection ++;
     if (VERBOSE && found)
         std::cout << "Target is described by bounding box: " << m_bbox << std::endl;
     return found;
@@ -71,7 +66,7 @@ void CarFinder::initTracker(cv::Mat frame) {
     if(m_tracker)
         m_tracker->clear();
     if (TRACKER_TYPE == "kcf")
-        m_tracker = cv::TrackerKCF::create();
+        m_tracker = cv::TrackerKCF::create(m_kcfParams);
     else if (TRACKER_TYPE == "goturn")
         m_tracker = cv::TrackerGOTURN::create();
     else
