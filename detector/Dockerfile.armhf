@@ -1,4 +1,4 @@
-FROM atonderski/opencv:armhf
+FROM atonderski/opencv:armhf as builder
 RUN [ "cross-build-start" ]
 RUN apt-get update -y && apt-get install -y apt-utils
 RUN apt-get install -y cmake g++ make build-essential
@@ -12,7 +12,6 @@ RUN mkdir build && \
 RUN [ "cross-build-end" ]  
 
 
-# Part to deploy example.
 FROM atonderski/opencv:armhf
 RUN [ "cross-build-start" ]
 WORKDIR /usr/bin

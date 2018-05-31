@@ -1,4 +1,4 @@
-FROM atonderski/opencv:amd64
+FROM atonderski/opencv:amd64 as builder
 # Do not use apt-get upgrade, something breaks...
 RUN apt-get update -y && apt-get install -y apt-utils # && apt-get upgrade -y
 RUN apt-get install -y cmake g++ make build-essential
