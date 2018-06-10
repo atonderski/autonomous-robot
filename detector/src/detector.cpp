@@ -98,14 +98,16 @@ int32_t main(int32_t argc, char **argv) {
                 }
 
                 // Make an estimation.
-                bool objectFound = carFinder.findCar(scaledImage.rowRange(ROW_CROP_TOP, ROWS_BOTTOM));
+                scaledImage = scaledImage.rowRange(CROP_TOP, CROP_BOTTOM);
+                bool objectFound = carFinder.findCar(scaledImage);
 
                 if (objectFound) {
                     float estimatedDetectionAngle = carFinder.getAngle();
                     float estimatedDetectionDistance = carFinder.getDistance();
 
                     if (VERBOSE) {
-                        if (i == 0) {
+                        if (i <= 1) {
+                            std::cout << "Saving image!" << std::endl;
                             std::string const FILENAME = std::to_string(i) + ".jpg";
                             cv::imwrite(FILENAME, scaledImage);
                             i++;

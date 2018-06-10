@@ -9,7 +9,7 @@ services:
           - "./stalker.conf:/opt/stalker.conf"
         depends_on:
           - detector
-        command: "--cid=112 --freq=10 --stalker"
+        command: "--cid=112 --freq=30 --stalker"
 
     camera:
         image: chalmersrevere/opendlv-device-camera-rpicamv2-armhf:v0.0.1
@@ -36,4 +36,4 @@ services:
           memlock:
             soft: 4000000
             hard: 4000000
-        command: bash -c "sleep 5; /usr/bin/detector --cascade-file=/usr/share/cascade_alt.xml --cid=112 --crop-top=100 --crop-bottom=200 --name=cam0 --scale=1.2 --num-neighbours=120 --tracker=kcf --frames-without-detection=50 --verbose --distance-threshold=0.8 --distance-scaling=0.2 --kcf-detect-thresh=0.5 --kcf-interp-factor=0.075 --kcf-compressed=size=2"
+        command: bash -c "sleep 5; /usr/bin/detector --cascade-file=/usr/share/cascade.xml --cid=112 --crop-top=120 --crop-bottom=320 --name=cam0 --scale=1.15 --num-neighbours=30 --tracker=kcf --frames-without-detection=50 --verbose --distance-threshold=0.8 --distance-scaling=0.2 --kcf-detect-thresh=0.3 --kcf-interp-factor=0.1 --kcf-compressed=size=4"
